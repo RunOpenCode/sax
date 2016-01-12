@@ -1,39 +1,109 @@
 <?php
-/**
- * Class AbstractSaxHandler
+/*
+ * This file is part of the runopencode/sax, an RunOpenCode project.
  *
- * Sax handler prototype.
+ * (c) 2016 RunOpenCode
  *
- * @package RunOpenCode\Sax
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
  */
 namespace RunOpenCode\Sax;
 
+use Psr\Http\Message\StreamInterface;
+use RunOpenCode\Sax\Contract\SaxHandlerInterface;
+use RunOpenCode\Sax\Contract\StreamAdapterInterface;
+use RunOpenCode\Sax\StreamAdapter\DomDocumentAdapter;
+use RunOpenCode\Sax\StreamAdapter\ResourceAdapter;
+use RunOpenCode\Sax\StreamAdapter\SimpleXmlAdapter;
+
+/**
+ * Class SaxParser
+ *
+ * Utility class for working with SAX handler and XML document.
+ *
+ * @package RunOpenCode\Sax
+ */
 final class SaxParser
 {
-    private static $instance;
+    /**
+     * @var StreamAdapterInterface[]
+     */
+    private $streamAdapters;
 
-    private function __construct() { }
-
-    public function parse(SaxHandlerInterface $handler, $document, callable $result = null)
+    /**
+     * SaxParser constructor.
+     *
+     * @param StreamAdapterInterface[] $streamAdapters Stream adapters to register to parser.
+     */
+    public function __construct(array $streamAdapters = array())
     {
-        return $handler->parse($this->getStream($document), $result);
+        $this->streamAdapters = array();
+
+        foreach ($streamAdapters as $streamAdapter) {
+            $this->addStreamAdapter($streamAdapter);
+        }
     }
 
-    private function getStream($document)
+    /**
+     * Register stream adapter to parser.
+     *
+     * @param StreamAdapterInterface $streamAdapter Stream adapter to register.
+     */
+    public function addStreamAdapter(StreamAdapterInterface $streamAdapter)
     {
-        if (is_resource($document)) {
-            return new Stream($document);
-        }
-
-        return new Stream(fopen($document, 'r'));
+        $this->streamAdapters[] = $streamAdapter;
     }
 
-    public static function get()
+    /**
+     * Parse XML document using provided SAX handler.
+     *
+     * @param SaxHandlerInterface $saxHandler Handler to user for parsing document.
+     * @param mixed $xmlDocument XML document source.
+     * @param callable|null $onResult Callable to execute when parsing is done.
+     */
+    public function parse(SaxHandlerInterface $saxHandler, $xmlDocument, callable $onResult = null)
     {
-        if (!self::$instance) {
-            self::$instance = new SaxParser();
+        $xmlDocument = $this->getDocumentStream($xmlDocument);
+        $saxHandler->parse($xmlDocument, $onResult);
+    }
+
+    /**
+     * Convert XML document to stream source.
+     *
+     * @param mixed $xmlDocument XML document source.
+     * @return StreamInterface Converted XML document to stream.
+     */
+    private function getDocumentStream($xmlDocument)
+    {
+        if ($xmlDocument instanceof StreamInterface) {
+            return $xmlDocument;
         }
 
-        return self::$instance;
+        /**
+         * @var StreamAdapterInterface $streamAdapter
+         */
+        foreach ($this->streamAdapters as $streamAdapter) {
+
+            if ($streamAdapter->supports($xmlDocument)) {
+                return $streamAdapter->convert($xmlDocument);
+            }
+        }
+
+        throw new \RuntimeException(sprintf('Suitable XML document stream adapter is not registered for XML document of type "%s".', is_object($xmlDocument) ? get_class($xmlDocument) : gettype($xmlDocument)));
+    }
+
+    /**
+     * Default SAX parser factory.
+     *
+     * @param string $streamClass FQCN to use when converting to XML document source to stream.
+     * @return SaxParser New SAX parser instance.
+     */
+    public static function factory($streamClass = 'GuzzleHttp\\Stream\\Stream')
+    {
+        return new SaxParser(array(
+            new ResourceAdapter($streamClass),
+            new DomDocumentAdapter($streamClass),
+            new SimpleXmlAdapter($streamClass)
+        ));
     }
 }

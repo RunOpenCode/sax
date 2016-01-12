@@ -7,19 +7,24 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
-namespace RunOpenCode\Sax;
+namespace RunOpenCode\Sax\Contract;
 
 use Psr\Http\Message\StreamInterface;
 
+/**
+ * Interface SaxHandlerInterface
+ *
+ * Sax handler interface.
+ *
+ * @package RunOpenCode\Sax
+ */
 interface SaxHandlerInterface
 {
     /**
      * Parse XML content and get result.
      *
      * @param StreamInterface $stream Streamed XML document.
-     * @param callable|null $result Callable to execute when parsing is completed.
-     *
-     * @return mixed Parsing result.
+     * @param callable|null $onResult Callable to execute when parsing is completed and parsing result can be provided.
      */
-    public function parse(StreamInterface $stream, callable $result = null);
+    public function parse(StreamInterface $stream, callable $onResult = null);
 }

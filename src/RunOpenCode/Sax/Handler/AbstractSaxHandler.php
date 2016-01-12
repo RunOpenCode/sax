@@ -7,9 +7,10 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
-namespace RunOpenCode\Sax;
+namespace RunOpenCode\Sax\Handler;
 
 use Psr\Http\Message\StreamInterface;
+use RunOpenCode\Sax\Contract\SaxHandlerInterface;
 
 /**
  * Class AbstractSaxHandler
@@ -35,7 +36,7 @@ abstract class AbstractSaxHandler implements SaxHandlerInterface
     /**
      * {@inheritdoc}
      */
-    public final function parse(StreamInterface $stream, callable $result = null)
+    public final function parse(StreamInterface $stream, callable $onResult = null)
     {
         $parser = xml_parser_create();
 
@@ -51,7 +52,7 @@ abstract class AbstractSaxHandler implements SaxHandlerInterface
 
         $stream->close();
 
-        $this->onResult($result);
+        $this->onResult($onResult);
     }
 
     /**
