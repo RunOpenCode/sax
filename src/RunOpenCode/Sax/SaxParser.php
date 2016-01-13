@@ -65,7 +65,7 @@ final class SaxParser
      */
     public function parse(SaxHandlerInterface $saxHandler, $xmlDocument, callable $onResult = null)
     {
-        $xmlDocument = $this->getDocumentStream($xmlDocument);
+        $xmlDocument = ($xmlDocument instanceof StreamInterface) ? $xmlDocument : $this->getDocumentStream($xmlDocument);
         $saxHandler->parse($xmlDocument, $onResult);
     }
 
@@ -74,13 +74,11 @@ final class SaxParser
      *
      * @param mixed $xmlDocument XML document source.
      * @return StreamInterface Converted XML document to stream.
+     *
+     * @throws \RuntimeException
      */
     private function getDocumentStream($xmlDocument)
     {
-        if ($xmlDocument instanceof StreamInterface) {
-            return $xmlDocument;
-        }
-
         /**
          * @var StreamAdapterInterface $streamAdapter
          */
