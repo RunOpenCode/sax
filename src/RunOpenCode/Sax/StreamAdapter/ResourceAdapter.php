@@ -29,9 +29,9 @@ class ResourceAdapter implements StreamAdapterInterface
     /**
      * ResourceAdapter constructor.
      *
-     * @param string $streamClass FQCN of StreamInterface implementation, GuzzleHttp\Stream\Stream is used by default.
+     * @param string $streamClass FQCN of StreamInterface implementation, GuzzleHttp\Psr7\Stream is used by default.
      */
-    public function __construct($streamClass = 'GuzzleHttp\\Stream\\Stream')
+    public function __construct($streamClass = 'GuzzleHttp\\Psr7\\Stream')
     {
         $this->streamClass = $streamClass;
     }

@@ -48,10 +48,12 @@ final class SaxParser
      * Register stream adapter to parser.
      *
      * @param StreamAdapterInterface $streamAdapter Stream adapter to register.
+     * @return SaxParser $this Fluent interface.
      */
     public function addStreamAdapter(StreamAdapterInterface $streamAdapter)
     {
         $this->streamAdapters[] = $streamAdapter;
+        return $this;
     }
 
     /**
@@ -98,7 +100,7 @@ final class SaxParser
      * @param string $streamClass FQCN to use when converting to XML document source to stream.
      * @return SaxParser New SAX parser instance.
      */
-    public static function factory($streamClass = 'GuzzleHttp\\Stream\\Stream')
+    public static function factory($streamClass = 'GuzzleHttp\\Psr7\\Stream')
     {
         return new SaxParser(array(
             new ResourceAdapter($streamClass),
