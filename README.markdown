@@ -26,5 +26,7 @@ Example:
         // Your result callback
     });
     
-API of this library is frozen and stable. Additional documentation is yet to come.    
+API of this library is frozen and stable. 
+
+TODO: Additional documentation is yet to come.    
 
