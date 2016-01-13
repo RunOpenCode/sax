@@ -28,8 +28,6 @@ class SampleHandlerTest extends \PHPUnit_Framework_TestCase
 
         });
 
-        echo var_export($result, true);
-
         $this->assertSame(include_once __DIR__ . '/../Fixtures/sample_output.php', $result);
     }
 
