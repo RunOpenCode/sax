@@ -9,7 +9,6 @@
  */
 namespace RunOpenCode\Sax\Test\StreamAdapter;
 
-use Psr\Http\Message\StreamInterface;
 use RunOpenCode\Sax\StreamAdapter\DomDocumentAdapter;
 use RunOpenCode\Sax\StreamAdapter\ResourceAdapter;
 use RunOpenCode\Sax\StreamAdapter\SimpleXmlAdapter;
@@ -26,7 +25,7 @@ class AdapterTest extends \PHPUnit_Framework_TestCase
         $resource = fopen(__DIR__ . '/../Fixtures/sample.xml', 'r');
 
         $this->assertTrue($adapter->supports($resource), 'Should support resource');
-        $this->assertInstanceOf(StreamInterface::class, $stream = $adapter->convert($resource), 'Should provide us with StreamInterface wrapper.');
+        $this->assertInstanceOf('Psr\\Http\\Message\\StreamInterface', $stream = $adapter->convert($resource), 'Should provide us with StreamInterface wrapper.');
 
         $stream->close();
     }
@@ -42,7 +41,7 @@ class AdapterTest extends \PHPUnit_Framework_TestCase
         $document->load(__DIR__ . '/../Fixtures/sample.xml');
 
         $this->assertTrue($adapter->supports($document), 'Should support \DOMDocument');
-        $this->assertInstanceOf(StreamInterface::class, $stream = $adapter->convert($document), 'Should provide us with StreamInterface wrapper.');
+        $this->assertInstanceOf('Psr\\Http\\Message\\StreamInterface', $stream = $adapter->convert($document), 'Should provide us with StreamInterface wrapper.');
 
         $stream->close();
     }
@@ -57,7 +56,7 @@ class AdapterTest extends \PHPUnit_Framework_TestCase
         $simpleXmlElement = new \SimpleXMLElement(file_get_contents(__DIR__ . '/../Fixtures/sample.xml'));
 
         $this->assertTrue($adapter->supports($simpleXmlElement), 'Should support \SimpleXMLElement');
-        $this->assertInstanceOf(StreamInterface::class, $stream = $adapter->convert($simpleXmlElement), 'Should provide us with StreamInterface wrapper.');
+        $this->assertInstanceOf('Psr\\Http\\Message\\StreamInterface', $stream = $adapter->convert($simpleXmlElement), 'Should provide us with StreamInterface wrapper.');
 
         $stream->close();
     }

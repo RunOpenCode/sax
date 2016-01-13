@@ -43,7 +43,9 @@ class SampleXmlHandler extends AbstractSaxHandler
      */
     protected function onElementData($parser, $data)
     {
-        $this->output[] = array('event' => 'onElementData', 'data' => $data);
+        if (trim($data)) {
+            $this->output[] = array('event' => 'onElementData', 'data' => trim($data));
+        }
     }
 
     /**
@@ -67,7 +69,7 @@ class SampleXmlHandler extends AbstractSaxHandler
      */
     protected function onParseError($message, $code, $lineno)
     {
-        throw new \RuntimeException(sprintf('Parser error "%s", lineno: %s', $message, $lineno), $code);
+        throw new \RuntimeException(sprintf('Parser error "%s", lineno: %s', strtolower($message), $lineno), $code);
     }
 
     /**

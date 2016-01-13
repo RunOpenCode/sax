@@ -15,35 +15,13 @@ return array (
         ),
     2 =>
         array (
-            'event' => 'onElementData',
-            'data' => '
-',
-        ),
-    3 =>
-        array (
-            'event' => 'onElementData',
-            'data' => '    ',
-        ),
-    4 =>
-        array (
             'event' => 'onElementStart',
             'tagName' => 'HEADER',
             'attributes' =>
                 array (
                 ),
         ),
-    5 =>
-        array (
-            'event' => 'onElementData',
-            'data' => '
-',
-        ),
-    6 =>
-        array (
-            'event' => 'onElementData',
-            'data' => '        ',
-        ),
-    7 =>
+    3 =>
         array (
             'event' => 'onElementStart',
             'tagName' => 'COPYRIGHT',
@@ -51,31 +29,56 @@ return array (
                 array (
                 ),
         ),
-    8 =>
+    4 =>
         array (
             'event' => 'onElementData',
             'data' => 'Given the technical possibilities of the network, the National Bank of Serbia cannot warrant the completeness and reliability of the data and information presented. Only the data and information printed directly from the computers of the National Bank of Serbia (not via the network) are reliable, accurate and complete. The National Bank of Serbia is not liable for any damage arising from using the data from this website. Downloading, reproduction and distribution of files from the website is allowed by the National Bank of Serbia, so long as the content of such files is not changed and the source is always visibly specified. The National Bank of Serbia warns that making any unauthorized changes to the data on its website, deleting or destroying or making such data unavailable, or intentionally incurring damage, is prohibited and illegal. All rights retained by the National Bank of Serbia.',
         ),
-    9 =>
+    5 =>
         array (
             'event' => 'onElementEnd',
             'tagName' => 'COPYRIGHT',
         ),
+    6 =>
+        array (
+            'event' => 'onElementStart',
+            'tagName' => 'NO',
+            'attributes' =>
+                array (
+                ),
+        ),
+    7 =>
+        array (
+            'event' => 'onElementData',
+            'data' => '252',
+        ),
+    8 =>
+        array (
+            'event' => 'onElementEnd',
+            'tagName' => 'NO',
+        ),
+    9 =>
+        array (
+            'event' => 'onElementStart',
+            'tagName' => 'DATE',
+            'attributes' =>
+                array (
+                ),
+        ),
     10 =>
         array (
             'event' => 'onElementData',
-            'data' => '
-',
+            'data' => '31.12.2015',
         ),
     11 =>
         array (
-            'event' => 'onElementData',
-            'data' => '        ',
+            'event' => 'onElementEnd',
+            'tagName' => 'DATE',
         ),
     12 =>
         array (
             'event' => 'onElementStart',
-            'tagName' => 'NO',
+            'tagName' => 'TYPE',
             'attributes' =>
                 array (
                 ),
@@ -83,99 +86,19 @@ return array (
     13 =>
         array (
             'event' => 'onElementData',
-            'data' => '252',
+            'data' => 'OFFICIAL MIDDLE EXCHANGE RATE OF THE DINAR',
         ),
     14 =>
         array (
             'event' => 'onElementEnd',
-            'tagName' => 'NO',
+            'tagName' => 'TYPE',
         ),
     15 =>
-        array (
-            'event' => 'onElementData',
-            'data' => '
-',
-        ),
-    16 =>
-        array (
-            'event' => 'onElementData',
-            'data' => '        ',
-        ),
-    17 =>
-        array (
-            'event' => 'onElementStart',
-            'tagName' => 'DATE',
-            'attributes' =>
-                array (
-                ),
-        ),
-    18 =>
-        array (
-            'event' => 'onElementData',
-            'data' => '31.12.2015',
-        ),
-    19 =>
-        array (
-            'event' => 'onElementEnd',
-            'tagName' => 'DATE',
-        ),
-    20 =>
-        array (
-            'event' => 'onElementData',
-            'data' => '
-',
-        ),
-    21 =>
-        array (
-            'event' => 'onElementData',
-            'data' => '        ',
-        ),
-    22 =>
-        array (
-            'event' => 'onElementStart',
-            'tagName' => 'TYPE',
-            'attributes' =>
-                array (
-                ),
-        ),
-    23 =>
-        array (
-            'event' => 'onElementData',
-            'data' => 'OFFICIAL MIDDLE EXCHANGE RATE OF THE DINAR',
-        ),
-    24 =>
-        array (
-            'event' => 'onElementEnd',
-            'tagName' => 'TYPE',
-        ),
-    25 =>
-        array (
-            'event' => 'onElementData',
-            'data' => '
-',
-        ),
-    26 =>
-        array (
-            'event' => 'onElementData',
-            'data' => '    ',
-        ),
-    27 =>
         array (
             'event' => 'onElementEnd',
             'tagName' => 'HEADER',
         ),
-    28 =>
-        array (
-            'event' => 'onElementData',
-            'data' => '
-',
-        ),
-    29 =>
-        array (
-            'event' => 'onElementData',
-            'data' => '    ',
-        ),
-    30 =>
+    16 =>
         array (
             'event' => 'onElementStart',
             'tagName' => 'ITEM',
@@ -183,18 +106,7 @@ return array (
                 array (
                 ),
         ),
-    31 =>
-        array (
-            'event' => 'onElementData',
-            'data' => '
-',
-        ),
-    32 =>
-        array (
-            'event' => 'onElementData',
-            'data' => '        ',
-        ),
-    33 =>
+    17 =>
         array (
             'event' => 'onElementStart',
             'tagName' => 'CODE',
@@ -203,28 +115,17 @@ return array (
                     'ID' => '1',
                 ),
         ),
-    34 =>
+    18 =>
         array (
             'event' => 'onElementData',
             'data' => '978',
         ),
-    35 =>
+    19 =>
         array (
             'event' => 'onElementEnd',
             'tagName' => 'CODE',
         ),
-    36 =>
-        array (
-            'event' => 'onElementData',
-            'data' => '
-',
-        ),
-    37 =>
-        array (
-            'event' => 'onElementData',
-            'data' => '        ',
-        ),
-    38 =>
+    20 =>
         array (
             'event' => 'onElementStart',
             'tagName' => 'COUNTRY',
@@ -232,28 +133,17 @@ return array (
                 array (
                 ),
         ),
-    39 =>
+    21 =>
         array (
             'event' => 'onElementData',
             'data' => 'EMU',
         ),
-    40 =>
+    22 =>
         array (
             'event' => 'onElementEnd',
             'tagName' => 'COUNTRY',
         ),
-    41 =>
-        array (
-            'event' => 'onElementData',
-            'data' => '
-',
-        ),
-    42 =>
-        array (
-            'event' => 'onElementData',
-            'data' => '        ',
-        ),
-    43 =>
+    23 =>
         array (
             'event' => 'onElementStart',
             'tagName' => 'CURRENCY',
@@ -261,28 +151,17 @@ return array (
                 array (
                 ),
         ),
-    44 =>
+    24 =>
         array (
             'event' => 'onElementData',
             'data' => 'EUR',
         ),
-    45 =>
+    25 =>
         array (
             'event' => 'onElementEnd',
             'tagName' => 'CURRENCY',
         ),
-    46 =>
-        array (
-            'event' => 'onElementData',
-            'data' => '
-',
-        ),
-    47 =>
-        array (
-            'event' => 'onElementData',
-            'data' => '        ',
-        ),
-    48 =>
+    26 =>
         array (
             'event' => 'onElementStart',
             'tagName' => 'UNIT',
@@ -290,28 +169,17 @@ return array (
                 array (
                 ),
         ),
-    49 =>
+    27 =>
         array (
             'event' => 'onElementData',
             'data' => '1',
         ),
-    50 =>
+    28 =>
         array (
             'event' => 'onElementEnd',
             'tagName' => 'UNIT',
         ),
-    51 =>
-        array (
-            'event' => 'onElementData',
-            'data' => '
-',
-        ),
-    52 =>
-        array (
-            'event' => 'onElementData',
-            'data' => '        ',
-        ),
-    53 =>
+    29 =>
         array (
             'event' => 'onElementStart',
             'tagName' => 'MIDDLE_RATE',
@@ -319,44 +187,27 @@ return array (
                 array (
                 ),
         ),
-    54 =>
+    30 =>
         array (
             'event' => 'onElementData',
             'data' => '121.6261',
         ),
-    55 =>
+    31 =>
         array (
             'event' => 'onElementEnd',
             'tagName' => 'MIDDLE_RATE',
         ),
-    56 =>
-        array (
-            'event' => 'onElementData',
-            'data' => '
-',
-        ),
-    57 =>
-        array (
-            'event' => 'onElementData',
-            'data' => '    ',
-        ),
-    58 =>
+    32 =>
         array (
             'event' => 'onElementEnd',
             'tagName' => 'ITEM',
         ),
-    59 =>
-        array (
-            'event' => 'onElementData',
-            'data' => '
-',
-        ),
-    60 =>
+    33 =>
         array (
             'event' => 'onElementEnd',
             'tagName' => 'EXCHANGE_RATES_LIST',
         ),
-    61 =>
+    34 =>
         array (
             'event' => 'onDocumentStart',
         ),

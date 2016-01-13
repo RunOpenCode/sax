@@ -25,7 +25,10 @@ class SampleHandlerTest extends \PHPUnit_Framework_TestCase
 
         $handler->parse(new Stream(fopen(__DIR__ . '/../Fixtures/sample.xml', 'r+')), function($output) use (&$result) {
             $result = $output;
+
         });
+
+        echo var_export($result, true);
 
         $this->assertSame(include_once __DIR__ . '/../Fixtures/sample_output.php', $result);
     }
@@ -39,9 +42,6 @@ class SampleHandlerTest extends \PHPUnit_Framework_TestCase
     public function broken()
     {
         $handler = new SampleXmlHandler();
-
-        $result = null;
-
         $handler->parse(new Stream(fopen(__DIR__ . '/../Fixtures/broken.xml', 'r+')));
     }
 }
