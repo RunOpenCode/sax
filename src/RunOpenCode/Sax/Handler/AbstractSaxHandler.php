@@ -36,7 +36,7 @@ abstract class AbstractSaxHandler implements SaxHandlerInterface
     /**
      * {@inheritdoc}
      */
-    public final function parse(StreamInterface $stream, callable $onResult = null)
+    final public function parse(StreamInterface $stream, callable $onResult = null)
     {
         $parser = xml_parser_create();
 
@@ -61,7 +61,7 @@ abstract class AbstractSaxHandler implements SaxHandlerInterface
      * @param resource $parser Parser handler.
      * @param StreamInterface $stream XML stream.
      */
-    protected abstract function onDocumentStart($parser, $stream);
+    abstract protected function onDocumentStart($parser, $stream);
 
     /**
      * Element start handler, executed when XML tag is entered.
@@ -70,7 +70,7 @@ abstract class AbstractSaxHandler implements SaxHandlerInterface
      * @param string $name Tag name.
      * @param array $attributes Element attributes.
      */
-    protected abstract function onElementStart($parser, $name, $attributes);
+    abstract protected function onElementStart($parser, $name, $attributes);
 
     /**
      * Element CDATA handler, executed when XML tag CDATA is parsed.
@@ -78,7 +78,7 @@ abstract class AbstractSaxHandler implements SaxHandlerInterface
      * @param resource $parser Parser handler.
      * @param string $data Element CDATA.
      */
-    protected abstract function onElementData($parser, $data);
+    abstract protected function onElementData($parser, $data);
 
     /**
      * Element end handler, executed when XML tag is leaved.
@@ -86,7 +86,7 @@ abstract class AbstractSaxHandler implements SaxHandlerInterface
      * @param resource $parser Parser handler.
      * @param string $name Tag name.
      */
-    protected abstract function onElementEnd($parser, $name);
+    abstract protected function onElementEnd($parser, $name);
 
     /**
      * Document end handler, executed when parsing process ended.
@@ -94,7 +94,7 @@ abstract class AbstractSaxHandler implements SaxHandlerInterface
      * @param resource $parser Parser handler.
      * @param StreamInterface $stream XML stream.
      */
-    protected abstract function onDocumentEnd($parser, $stream);
+    abstract protected function onDocumentEnd($parser, $stream);
 
     /**
      * Parsing error handler.
@@ -103,7 +103,7 @@ abstract class AbstractSaxHandler implements SaxHandlerInterface
      * @param int $code Error code.
      * @param int $lineno XML line number which caused error.
      */
-    protected abstract function onParseError($message, $code, $lineno);
+    abstract protected function onParseError($message, $code, $lineno);
 
     /**
      * Result callable handler.
@@ -115,7 +115,7 @@ abstract class AbstractSaxHandler implements SaxHandlerInterface
      *
      * @param callable $callable Callable to execute when parsing is completed.
      */
-    protected abstract function onResult(callable $callable = null);
+    abstract protected function onResult(callable $callable = null);
 
     /**
      * Parse path to XML document/string content.
@@ -133,7 +133,7 @@ abstract class AbstractSaxHandler implements SaxHandlerInterface
         }
 
         while ($data = $stream->read($this->options['buffer_size'])) {
-            xml_parse($parser, $data, $stream->eof()) or $this->onParseError(xml_error_string(xml_get_error_code($parser)), xml_get_error_code($parser), xml_get_current_line_number($parser));
+            xml_parse($parser, $data, $stream->eof()) || $this->onParseError(xml_error_string(xml_get_error_code($parser)), xml_get_error_code($parser), xml_get_current_line_number($parser));
         }
 
         return $this;
