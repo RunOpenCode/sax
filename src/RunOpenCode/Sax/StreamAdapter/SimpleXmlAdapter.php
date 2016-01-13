@@ -9,7 +9,6 @@
  */
 namespace RunOpenCode\Sax\StreamAdapter;
 
-use Psr\Http\Message\StreamInterface;
 use RunOpenCode\Sax\Contract\StreamAdapterInterface;
 
 class SimpleXmlAdapter implements StreamAdapterInterface
