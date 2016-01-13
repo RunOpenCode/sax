@@ -23,7 +23,7 @@ use RunOpenCode\Sax\StreamAdapter\SimpleXmlAdapter;
  *
  * @package RunOpenCode\Sax
  */
-final class SaxParser
+class SaxParser
 {
     /**
      * @var StreamAdapterInterface[]
@@ -100,7 +100,7 @@ final class SaxParser
      */
     public static function factory($streamClass = 'GuzzleHttp\\Psr7\\Stream')
     {
-        return new SaxParser(array(
+        return new static(array(
             new ResourceAdapter($streamClass),
             new DomDocumentAdapter($streamClass),
             new SimpleXmlAdapter($streamClass)

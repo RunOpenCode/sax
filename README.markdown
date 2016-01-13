@@ -26,7 +26,43 @@ Example:
         // Your result callback
     });
     
-API of this library is frozen and stable. 
+    
+List of methods which you ought to implement:
+     
+- `onDocumentStart`: executed when parsing started of XML document.
+- `onElementStart`: executed when parser stumbled upon new XML tag.
+- `onElementData`: executed when parser stumbled upon CDATA of some XML tag.
+- `onElementEnd`: executed when parser stumbled upon closed already opened XML tag.
+- `onDocumentEnd`: executed when parsing of XML document is done.
+- `onParseError`: executed when parsing error is triggered. 
+- `onResult`: executed at very end of parsing process where you can execute provided callable and provide callee with
+parsing results. Form and API of result callable is up to you and your needs.
 
-TODO: Additional documentation is yet to come.    
+**Important notes**
+
+- Due to underlying implementation of PHP XML parser, all tag names in relevant event calls are provided uppercase. Per example,
+if you have tag `<tag></tag>`, in relevant event methods your check for tag name should be `if ($name === 'TAG')`. 
+- Event `onParseError` is due to unrecoverable parsing error, however, it is up to you and your use case weather you are
+going to trigger error continue with execution.
+ 
+# SaxParser and StreamAdapterInterface
+
+`RunOpenCode\Sax\SaxParser` is provided as utility class which ought to ease up your usage of your SaxHandler implementation. SaxHandler
+uses `Psr\Http\Message\StreamInterface` implementation as source of XML document for parsing, however, StreamAdapters
+can help you to work with various XML document sources, such as:
+
+- Resources (file resources or PHP native streams)
+- DOMDocument
+- SimpleXMLElement
+
+If you need any other type of XML document source, you can provide it by implementing `RunOpenCode\Sax\Contract\StreamAdapterInterface`,
+and you can register it to `RunOpenCode\Sax\SaxParser` instance via `SaxParser::addStreamAdapter()` method call.
+ 
+When you invoke `SaxParser::parse()`, before parsing, source of provided XML document will be checked against available 
+adapters and converted to `Psr\Http\Message\StreamInterface` implementation.
+
+This library recommends [guzzlehttp/psr7](https://github.com/guzzle/psr7) and uses it as default `StreamInterface` implementation,
+but you can use any other implementation that suits your need.
+
+API of this library is frozen and stable.     
 
