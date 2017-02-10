@@ -21,4 +21,3 @@ install: composer update --prefer-source
 
 script: phpunit --coverage-clover=coverage.clover
 
-
