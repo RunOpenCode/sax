@@ -2,7 +2,7 @@
 /*
  * This file is part of the runopencode/sax, an RunOpenCode project.
  *
- * (c) 2016 RunOpenCode
+ * (c) 2017 RunOpenCode
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
@@ -12,6 +12,7 @@ namespace RunOpenCode\Sax;
 use Psr\Http\Message\StreamInterface;
 use RunOpenCode\Sax\Contract\SaxHandlerInterface;
 use RunOpenCode\Sax\Contract\StreamAdapterInterface;
+use RunOpenCode\Sax\Exception\RuntimeException;
 use RunOpenCode\Sax\StreamAdapter\DomDocumentAdapter;
 use RunOpenCode\Sax\StreamAdapter\ResourceAdapter;
 use RunOpenCode\Sax\StreamAdapter\SimpleXmlAdapter;
@@ -89,7 +90,7 @@ class SaxParser
             }
         }
 
-        throw new \RuntimeException(sprintf('Suitable XML document stream adapter is not registered for XML document of type "%s".', is_object($xmlDocument) ? get_class($xmlDocument) : gettype($xmlDocument)));
+        throw new RuntimeException(sprintf('Suitable XML document stream adapter is not registered for XML document of type "%s".', is_object($xmlDocument) ? get_class($xmlDocument) : gettype($xmlDocument)));
     }
 
     /**

@@ -2,14 +2,13 @@
 /*
  * This file is part of the runopencode/sax, an RunOpenCode project.
  *
- * (c) 2016 RunOpenCode
+ * (c) 2017 RunOpenCode
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
 namespace RunOpenCode\Sax\Test\Fixtures;
 
-use Psr\Http\Message\StreamInterface;
 use RunOpenCode\Sax\Handler\AbstractSaxHandler;
 
 class SampleXmlHandler extends AbstractSaxHandler

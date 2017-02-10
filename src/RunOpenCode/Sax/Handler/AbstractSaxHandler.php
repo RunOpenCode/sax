@@ -2,7 +2,7 @@
 /*
  * This file is part of the runopencode/sax, an RunOpenCode project.
  *
- * (c) 2016 RunOpenCode
+ * (c) 2017 RunOpenCode
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
@@ -11,6 +11,7 @@ namespace RunOpenCode\Sax\Handler;
 
 use Psr\Http\Message\StreamInterface;
 use RunOpenCode\Sax\Contract\SaxHandlerInterface;
+use RunOpenCode\Sax\Exception\ParseException;
 
 /**
  * Class AbstractSaxHandler
@@ -38,21 +39,27 @@ abstract class AbstractSaxHandler implements SaxHandlerInterface
      */
     final public function parse(StreamInterface $stream, callable $onResult = null)
     {
-        $parser = xml_parser_create();
+        try {
 
-        $this->onDocumentStart($parser, $stream);
+            $parser = xml_parser_create();
 
-        $this->attachHandlers($parser);
+            $this->onDocumentStart($parser, $stream);
 
-        $this->process($parser, $stream);
+            $this->attachHandlers($parser);
 
-        $this->onDocumentEnd($parser, $stream);
+            $this->process($parser, $stream);
 
-        xml_parser_free($parser);
+            $this->onDocumentEnd($parser, $stream);
 
-        $stream->close();
+            xml_parser_free($parser);
 
-        $this->onResult($onResult);
+            $stream->close();
+
+            $this->onResult($onResult);
+
+        } catch (\Exception $e) {
+            throw new ParseException('Unable to parse provided document stream.', 0, $e);
+        }
     }
 
     /**

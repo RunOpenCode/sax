@@ -2,7 +2,7 @@
 /*
  * This file is part of the runopencode/sax, an RunOpenCode project.
  *
- * (c) 2016 RunOpenCode
+ * (c) 2017 RunOpenCode
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
@@ -10,6 +10,8 @@
 namespace RunOpenCode\Sax\StreamAdapter;
 
 use RunOpenCode\Sax\Contract\StreamAdapterInterface;
+use RunOpenCode\Sax\Exception\RuntimeException;
+use RunOpenCode\Sax\Exception\StreamAdapterException;
 
 class SimpleXmlAdapter implements StreamAdapterInterface
 {
@@ -55,13 +57,21 @@ class SimpleXmlAdapter implements StreamAdapterInterface
          */
         if (class_exists($this->streamClass)) {
 
-            $stream = fopen($this->options['stream'],'r+');
+            $stream = fopen($this->options['stream'],'r+b');
+
+            if (false === $stream) {
+                throw new StreamAdapterException(sprintf('Unable to acquire resource handler on "%s".', $this->options['stream']));
+            }
+
             fwrite($stream, $xmlDocument->asXML());
-            rewind($stream);
+
+            if (false === rewind($stream)) {
+                throw new StreamAdapterException('Unable to to rewind stream.');
+            }
 
             return new $this->streamClass($stream);
         }
 
-        throw new \RuntimeException(sprintf('Provided StreamInterface implementation "%s" is not available on this system.', $this->streamClass));
+        throw new RuntimeException(sprintf('Provided StreamInterface implementation "%s" is not available on this system.', $this->streamClass));
     }
 }

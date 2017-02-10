@@ -2,7 +2,7 @@
 /*
  * This file is part of the runopencode/sax, an RunOpenCode project.
  *
- * (c) 2016 RunOpenCode
+ * (c) 2017 RunOpenCode
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
@@ -25,6 +25,8 @@ interface SaxHandlerInterface
      *
      * @param StreamInterface $stream Streamed XML document.
      * @param callable|null $onResult Callable to execute when parsing is completed and parsing result can be provided.
+     *
+     * @throws \Exception If parsing is impossible.
      */
     public function parse(StreamInterface $stream, callable $onResult = null);
 }

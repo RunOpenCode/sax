@@ -2,18 +2,19 @@
 /*
  * This file is part of the runopencode/sax, an RunOpenCode project.
  *
- * (c) 2016 RunOpenCode
+ * (c) 2017 RunOpenCode
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
 namespace RunOpenCode\Sax\Test\StreamAdapter;
 
+use PHPUnit\Framework\TestCase;
 use RunOpenCode\Sax\StreamAdapter\DomDocumentAdapter;
 use RunOpenCode\Sax\StreamAdapter\ResourceAdapter;
 use RunOpenCode\Sax\StreamAdapter\SimpleXmlAdapter;
 
-class AdapterTest extends \PHPUnit_Framework_TestCase
+class AdapterTest extends TestCase
 {
     /**
      * @test
@@ -22,7 +23,7 @@ class AdapterTest extends \PHPUnit_Framework_TestCase
     {
         $adapter = new ResourceAdapter();
 
-        $resource = fopen(__DIR__ . '/../Fixtures/sample.xml', 'r');
+        $resource = fopen(__DIR__ . '/../Fixtures/sample.xml', 'rb');
 
         $this->assertTrue($adapter->supports($resource), 'Should support resource');
         $this->assertInstanceOf('Psr\\Http\\Message\\StreamInterface', $stream = $adapter->convert($resource), 'Should provide us with StreamInterface wrapper.');
@@ -70,7 +71,7 @@ class AdapterTest extends \PHPUnit_Framework_TestCase
         $domDocumentAdapter = new DomDocumentAdapter();
         $simpleXmlAdapter = new SimpleXmlAdapter();
 
-        $resource = fopen(__DIR__ . '/../Fixtures/sample.xml', 'r');
+        $resource = fopen(__DIR__ . '/../Fixtures/sample.xml', 'rb');
 
         $domDocument = new \DOMDocument();
         $domDocument->load(__DIR__ . '/../Fixtures/sample.xml');

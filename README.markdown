@@ -44,6 +44,7 @@ parsing results. Form and API of result callable is up to you and your needs.
 if you have tag `<tag></tag>`, in relevant event methods your check for tag name should be `if ($name === 'TAG')`. 
 - Event `onParseError` is due to unrecoverable parsing error, however, it is up to you and your use case weather you are
 going to trigger error continue with execution.
+- Event `onElementData` will trigger even if you have blank spaces only between tags in XML document. 
  
 # SaxParser and StreamAdapterInterface
 
@@ -66,3 +67,9 @@ but you can use any other implementation that suits your need.
 
 API of this library is frozen and stable.     
 
+## Changelog
+
+### February 10th, 2017.
+- Dropped support for PHP 5.x
+- Added PHPUnit 6.x as requirement
+- Added lib exceptions

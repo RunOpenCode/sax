@@ -12,7 +12,8 @@
         }
     ],
     "require": {
-        "psr/http-message": "~1.0"
+        "psr/http-message": "~1.0",
+        "roave/security-advisories": "dev-master"
     },
     "autoload": {
         "psr-4": {
@@ -20,8 +21,8 @@
         }
     },
     "require-dev": {
-        "php": ">=5.4",
-        "phpunit/phpunit": "~4.8",
+        "php": ">=7",
+        "phpunit/phpunit": "~6.0",
         "guzzlehttp/psr7": "~1.0"
     },
     "autoload-dev": {

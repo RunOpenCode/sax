@@ -2,7 +2,7 @@
 /*
  * This file is part of the runopencode/sax, an RunOpenCode project.
  *
- * (c) 2016 RunOpenCode
+ * (c) 2017 RunOpenCode
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
@@ -34,7 +34,7 @@ interface StreamAdapterInterface
      * @param mixed $xmlDocument XML document source to convert.
      * @return StreamInterface XML document in stream.
      *
-     * @throws \RuntimeException If conversion is impossible.
+     * @throws \Exception If conversion is impossible.
      */
     public function convert($xmlDocument);
 }
