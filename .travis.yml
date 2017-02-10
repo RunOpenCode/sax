@@ -10,16 +10,16 @@ matrix:
     allow_failures:
         - php: hhvm
 
-
 cache:
   directories:
     - $HOME/.composer/cache
 
-before_script:
-  - travis_retry composer update ${COMPOSER_FLAGS} --no-interaction --prefer-dist
+before_install:
+  - composer self-update
 
-script:
-  - vendor/bin/phpunit --coverage-text --coverage-clover=coverage.clover
+install: composer update --prefer-source
+
+script: phpunit --coverage-clover=coverage.clover
 
 after_script:
   - |
