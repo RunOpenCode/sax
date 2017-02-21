@@ -36,6 +36,12 @@ List of methods which you ought to implement:
 - `getResult`: executed at very end of parsing process where you should provide a invoker
 with parsing results.
 
+Since common usage of Sax parser is to have a stack of currently working elements,
+there is a prototype implementation of that as well in class `RunOpenCode\Sax\Handler\AbstractStackedSaxHandler`.
+It extends `RunOpenCode\Sax\Handler\AbstractSaxHandler` and provides you with possibility
+to get current working element via `getCurrentElementName()` as well as with stack size
+via `getStackSize()`.
+
 **Important notes**
 
 - Due to underlying implementation of PHP XML parser, all tag names in relevant event calls are provided uppercase. Per example,
