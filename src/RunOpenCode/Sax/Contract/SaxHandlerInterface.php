@@ -24,9 +24,10 @@ interface SaxHandlerInterface
      * Parse XML content and get result.
      *
      * @param StreamInterface $stream Streamed XML document.
-     * @param callable|null $onResult Callable to execute when parsing is completed and parsing result can be provided.
+     *
+     * @return mixed Parsing result
      *
      * @throws \Exception If parsing is impossible.
      */
-    public function parse(StreamInterface $stream, callable $onResult = null);
+    public function parse(StreamInterface $stream);
 }

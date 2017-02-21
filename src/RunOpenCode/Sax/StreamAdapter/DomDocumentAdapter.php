@@ -43,7 +43,7 @@ class DomDocumentAdapter implements StreamAdapterInterface
         $this->streamClass = $streamClass;
         $this->options = array_merge(array(
             'stream' => 'php://memory',
-            'save_xml_options' => null
+            'save_xml_options' => null,
         ), $options);
     }
 
@@ -65,7 +65,7 @@ class DomDocumentAdapter implements StreamAdapterInterface
          */
         if (class_exists($this->streamClass)) {
 
-            $stream = @fopen($this->options['stream'],'r+b');
+            $stream = @fopen($this->options['stream'], 'r+b');
 
             if (false === $stream) {
                 throw new StreamAdapterException(sprintf('Unable to acquire resource handler on "%s".', $this->options['stream']));

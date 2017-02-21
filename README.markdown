@@ -22,9 +22,7 @@ Example:
         // ... your implementation 
     }
     
-    $parser = RunOpenCode\Sax\SaxParser::factory()->parse(new MySaxHandler(), $myXmlDocumentResource, function($result){
-        // Your result callback
-    });
+    $result = RunOpenCode\Sax\SaxParser::factory()->parse(new MySaxHandler(), $myXmlDocumentResource);
     
     
 List of methods which you ought to implement:
@@ -35,8 +33,8 @@ List of methods which you ought to implement:
 - `onElementEnd`: executed when parser stumbled upon closed already opened XML tag.
 - `onDocumentEnd`: executed when parsing of XML document is done.
 - `onParseError`: executed when parsing error is triggered. 
-- `onResult`: executed at very end of parsing process where you can execute provided callable and provide callee with
-parsing results. Form and API of result callable is up to you and your needs.
+- `getResult`: executed at very end of parsing process where you should provide a invoker
+with parsing results.
 
 **Important notes**
 
@@ -65,9 +63,11 @@ adapters and converted to `Psr\Http\Message\StreamInterface` implementation.
 This library recommends [guzzlehttp/psr7](https://github.com/guzzle/psr7) and uses it as default `StreamInterface` implementation,
 but you can use any other implementation that suits your need.
 
-API of this library is frozen and stable.     
-
 ## Changelog
+
+### February 21th, 2017.
+- **BC break**: Changed api, no more callback, invocation of `parse()` method
+should return parsing result.
 
 ### February 10th, 2017.
 - Dropped support for PHP 5.x

@@ -74,8 +74,8 @@ class SampleXmlHandler extends AbstractSaxHandler
     /**
      * {@inheritdoc}
      */
-    protected function onResult(callable $callable = null)
+    protected function getResult()
     {
-        $callable($this->output);
+        return $this->output;
     }
 }

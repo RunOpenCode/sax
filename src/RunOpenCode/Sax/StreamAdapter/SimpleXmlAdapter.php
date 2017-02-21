@@ -13,6 +13,13 @@ use RunOpenCode\Sax\Contract\StreamAdapterInterface;
 use RunOpenCode\Sax\Exception\RuntimeException;
 use RunOpenCode\Sax\Exception\StreamAdapterException;
 
+/**
+ * Class SimpleXmlAdapter
+ *
+ * SimpleXml adapter
+ *
+ * @package RunOpenCode\Sax\StreamAdapter
+ */
 class SimpleXmlAdapter implements StreamAdapterInterface
 {
     /**
@@ -35,7 +42,7 @@ class SimpleXmlAdapter implements StreamAdapterInterface
     {
         $this->streamClass = $streamClass;
         $this->options = array_merge(array(
-            'stream' => 'php://memory'
+            'stream' => 'php://memory',
         ), $options);
     }
 
@@ -57,7 +64,7 @@ class SimpleXmlAdapter implements StreamAdapterInterface
          */
         if (class_exists($this->streamClass)) {
 
-            $stream = fopen($this->options['stream'],'r+b');
+            $stream = fopen($this->options['stream'], 'r+b');
 
             if (false === $stream) {
                 throw new StreamAdapterException(sprintf('Unable to acquire resource handler on "%s".', $this->options['stream']));

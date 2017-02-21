@@ -27,17 +27,22 @@ abstract class AbstractSaxHandler implements SaxHandlerInterface
      */
     protected $options;
 
+    /**
+     * AbstractSaxHandler constructor.
+     *
+     * @param array $options
+     */
     public function __construct(array $options = array())
     {
         $this->options = array_merge(array(
-            'buffer_size' => 4096
+            'buffer_size' => 4096,
         ), $options);
     }
 
     /**
      * {@inheritdoc}
      */
-    final public function parse(StreamInterface $stream, callable $onResult = null)
+    final public function parse(StreamInterface $stream)
     {
         try {
 
@@ -55,7 +60,7 @@ abstract class AbstractSaxHandler implements SaxHandlerInterface
 
             $stream->close();
 
-            $this->onResult($onResult);
+            return $this->getResult();
 
         } catch (\Exception $e) {
             throw new ParseException('Unable to parse provided document stream.', 0, $e);
@@ -113,16 +118,14 @@ abstract class AbstractSaxHandler implements SaxHandlerInterface
     abstract protected function onParseError($message, $code, $lineno);
 
     /**
-     * Result callable handler.
+     * Get parsing result.
      *
      * Considering that your handler processed XML document, this method will collect
-     * parsing result. This method is called last and it will provide parsing result to callable.
+     * parsing result. This method is called last and it will provide parsing result to invoker.
      *
-     * Callable parameters are user defined and depends on defined handler API and user requirements.
-     *
-     * @param callable $callable Callable to execute when parsing is completed.
+     * @return mixed Parsing result
      */
-    abstract protected function onResult(callable $callable = null);
+    abstract protected function getResult();
 
     /**
      * Parse path to XML document/string content.
@@ -156,17 +159,17 @@ abstract class AbstractSaxHandler implements SaxHandlerInterface
     {
         xml_set_element_handler(
             $parser,
-            \Closure::bind(function($parser, $name, $attributes) {
+            \Closure::bind(function ($parser, $name, $attributes) {
                 $this->onElementStart($parser, $name, $attributes);
             }, $this),
-            \Closure::bind(function($parser, $name) {
+            \Closure::bind(function ($parser, $name) {
                 $this->onElementEnd($parser, $name);
             }, $this)
         );
 
         xml_set_character_data_handler(
             $parser,
-            \Closure::bind(function($parser, $data) {
+            \Closure::bind(function ($parser, $data) {
                 $this->onElementData($parser, $data);
             }, $this));
 

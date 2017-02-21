@@ -22,11 +22,7 @@ class SampleHandlerTest extends TestCase
     {
         $handler = new SampleXmlHandler();
 
-        $result = null;
-
-        $handler->parse(new Stream(fopen(__DIR__ . '/../Fixtures/sample.xml', 'r+b')), function($output) use (&$result) {
-            $result = $output;
-        });
+        $result = $handler->parse(new Stream(fopen(__DIR__ . '/../Fixtures/sample.xml', 'r+b')));
 
         $this->assertSame(include_once __DIR__ . '/../Fixtures/sample_output.php', $result);
     }

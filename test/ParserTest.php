@@ -36,9 +36,9 @@ class ParserTest extends TestCase
 
         $document = new \SimpleXMLElement(file_get_contents(__DIR__ . '/Fixtures/sample.xml'));
 
-        $parser->parse(new SampleXmlHandler(), $document, \Closure::bind(function() {
-            $this->assertTrue(true, 'Parsing should be executed.');
-        }, $this));
+        $result = $parser->parse(new SampleXmlHandler(), $document);
+
+        $this->assertTrue(is_array($result), 'Parsing should be executed.');
     }
 
     /**
@@ -48,8 +48,8 @@ class ParserTest extends TestCase
     {
         $document = new \SimpleXMLElement(file_get_contents(__DIR__ . '/Fixtures/sample.xml'));
 
-        SaxParser::factory()->parse(new SampleXmlHandler(), $document, \Closure::bind(function() {
-            $this->assertTrue(true, 'Parsing should be executed.');
-        }, $this));
+        $result = SaxParser::factory()->parse(new SampleXmlHandler(), $document);
+
+        $this->assertTrue(is_array($result), 'Parsing should be executed.');
     }
 }

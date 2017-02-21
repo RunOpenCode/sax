@@ -62,12 +62,28 @@ class SaxParser
      *
      * @param SaxHandlerInterface $saxHandler Handler to user for parsing document.
      * @param mixed $xmlDocument XML document source.
-     * @param callable|null $onResult Callable to execute when parsing is done.
+     *
+     * @return mixed Parsing result.
      */
-    public function parse(SaxHandlerInterface $saxHandler, $xmlDocument, callable $onResult = null)
+    public function parse(SaxHandlerInterface $saxHandler, $xmlDocument)
     {
         $xmlDocument = ($xmlDocument instanceof StreamInterface) ? $xmlDocument : $this->getDocumentStream($xmlDocument);
-        $saxHandler->parse($xmlDocument, $onResult);
+        return $saxHandler->parse($xmlDocument);
+    }
+
+    /**
+     * Default SAX parser factory.
+     *
+     * @param string $streamClass FQCN to use when converting to XML document source to stream.
+     * @return SaxParser New SAX parser instance.
+     */
+    public static function factory($streamClass = 'GuzzleHttp\\Psr7\\Stream')
+    {
+        return new static([
+            new ResourceAdapter($streamClass),
+            new DomDocumentAdapter($streamClass),
+            new SimpleXmlAdapter($streamClass),
+        ]);
     }
 
     /**
@@ -91,20 +107,5 @@ class SaxParser
         }
 
         throw new RuntimeException(sprintf('Suitable XML document stream adapter is not registered for XML document of type "%s".', is_object($xmlDocument) ? get_class($xmlDocument) : gettype($xmlDocument)));
-    }
-
-    /**
-     * Default SAX parser factory.
-     *
-     * @param string $streamClass FQCN to use when converting to XML document source to stream.
-     * @return SaxParser New SAX parser instance.
-     */
-    public static function factory($streamClass = 'GuzzleHttp\\Psr7\\Stream')
-    {
-        return new static(array(
-            new ResourceAdapter($streamClass),
-            new DomDocumentAdapter($streamClass),
-            new SimpleXmlAdapter($streamClass)
-        ));
     }
 }
