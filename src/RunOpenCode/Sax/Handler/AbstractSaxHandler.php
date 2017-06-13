@@ -44,27 +44,21 @@ abstract class AbstractSaxHandler implements SaxHandlerInterface
      */
     final public function parse(StreamInterface $stream)
     {
-        try {
+        $parser = xml_parser_create();
 
-            $parser = xml_parser_create();
+        $this->onDocumentStart($parser, $stream);
 
-            $this->onDocumentStart($parser, $stream);
+        $this->attachHandlers($parser);
 
-            $this->attachHandlers($parser);
+        $this->process($parser, $stream);
 
-            $this->process($parser, $stream);
+        $this->onDocumentEnd($parser, $stream);
 
-            $this->onDocumentEnd($parser, $stream);
+        xml_parser_free($parser);
 
-            xml_parser_free($parser);
+        $stream->close();
 
-            $stream->close();
-
-            return $this->getResult();
-
-        } catch (\Exception $e) {
-            throw new ParseException('Unable to parse provided document stream.', 0, $e);
-        }
+        return $this->getResult();
     }
 
     /**
