@@ -30,12 +30,12 @@ class SampleHandlerTest extends TestCase
     /**
      * @test
      *
-     * @expectedException \RunOpenCode\Sax\Exception\ParseException
-     * @expectedExceptionMessage Unable to parse provided document stream
+     * @expectedException \RuntimeException
+     * @expectedExceptionMessage Parser error "mismatched tag", lineno: 10
      */
     public function broken()
     {
         $handler = new SampleXmlHandler();
-        $handler->parse(new Stream(fopen(__DIR__ . '/../Fixtures/broken.xml', 'rb+')));
+        $handler->parse(new Stream(fopen(__DIR__ . '/../Fixtures/broken.xml', 'rb')));
     }
 }
