@@ -24,8 +24,27 @@ class SampleHandlerTest extends TestCase
 
         $result = $handler->parse(new Stream(fopen(__DIR__ . '/../Fixtures/sample.xml', 'r+b')));
 
-        $this->assertSame(include_once __DIR__ . '/../Fixtures/sample_output.php', $result);
+        $this->assertSame(require __DIR__ . '/../Fixtures/sample_output.php', $result);
     }
+
+    /**
+     * @test
+     */
+    public function itRewindsStream()
+    {
+        $handler = new SampleXmlHandler();
+        $stream = new Stream(fopen(__DIR__ . '/../Fixtures/sample.xml', 'r+b'));
+
+        while (!$stream->eof()) {
+            $stream->read(1024);
+        }
+
+        $this->assertTrue($stream->eof());
+
+        $result = $handler->parse($stream);
+        $this->assertSame(require __DIR__ . '/../Fixtures/sample_output.php', $result);
+    }
+
 
     /**
      * @test

@@ -52,4 +52,26 @@ class ParserTest extends TestCase
 
         $this->assertTrue(is_array($result), 'Parsing should be executed.');
     }
+
+    /**
+     * @test
+     * @expectedException \RunOpenCode\Sax\Exception\RuntimeException
+     */
+    public function notSupported()
+    {
+        $resourceAdapter = new ResourceAdapter();
+        $domDocumentAdapter = new DomDocumentAdapter();
+        $simpleXmlAdapter = new SimpleXmlAdapter();
+
+        $parser = new SaxParser();
+
+        $parser
+            ->addStreamAdapter($resourceAdapter)
+            ->addStreamAdapter($domDocumentAdapter)
+            ->addStreamAdapter($simpleXmlAdapter);
+
+        $document = new class {  };
+
+        $parser->parse(new SampleXmlHandler(), $document);
+    }
 }

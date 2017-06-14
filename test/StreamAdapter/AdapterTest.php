@@ -19,53 +19,7 @@ class AdapterTest extends TestCase
     /**
      * @test
      */
-    public function resource()
-    {
-        $adapter = new ResourceAdapter();
-
-        $resource = fopen(__DIR__ . '/../Fixtures/sample.xml', 'rb');
-
-        $this->assertTrue($adapter->supports($resource), 'Should support resource');
-        $this->assertInstanceOf('Psr\\Http\\Message\\StreamInterface', $stream = $adapter->convert($resource), 'Should provide us with StreamInterface wrapper.');
-
-        $stream->close();
-    }
-
-    /**
-     * @test
-     */
-    public function domDocument()
-    {
-        $adapter = new DomDocumentAdapter();
-
-        $document = new \DOMDocument();
-        $document->load(__DIR__ . '/../Fixtures/sample.xml');
-
-        $this->assertTrue($adapter->supports($document), 'Should support \DOMDocument');
-        $this->assertInstanceOf('Psr\\Http\\Message\\StreamInterface', $stream = $adapter->convert($document), 'Should provide us with StreamInterface wrapper.');
-
-        $stream->close();
-    }
-
-    /**
-     * @test
-     */
-    public function simpeXml()
-    {
-        $adapter = new SimpleXmlAdapter();
-
-        $simpleXmlElement = new \SimpleXMLElement(file_get_contents(__DIR__ . '/../Fixtures/sample.xml'));
-
-        $this->assertTrue($adapter->supports($simpleXmlElement), 'Should support \SimpleXMLElement');
-        $this->assertInstanceOf('Psr\\Http\\Message\\StreamInterface', $stream = $adapter->convert($simpleXmlElement), 'Should provide us with StreamInterface wrapper.');
-
-        $stream->close();
-    }
-
-    /**
-     * @test
-     */
-    public function noOverlap()
+    public function itDoesNotOverlapSupportedSources()
     {
         $resourceAdapter = new ResourceAdapter();
         $domDocumentAdapter = new DomDocumentAdapter();

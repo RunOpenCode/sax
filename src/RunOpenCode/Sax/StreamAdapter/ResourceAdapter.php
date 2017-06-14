@@ -10,7 +10,6 @@
 namespace RunOpenCode\Sax\StreamAdapter;
 
 use RunOpenCode\Sax\Contract\StreamAdapterInterface;
-use RunOpenCode\Sax\Exception\RuntimeException;
 
 /**
  * Class ResourceAdapter
@@ -49,13 +48,6 @@ class ResourceAdapter implements StreamAdapterInterface
      */
     public function convert($xmlDocument)
     {
-        /**
-         * @var resource $xmlDocument
-         */
-        if (class_exists($this->streamClass)) {
-            return new $this->streamClass($xmlDocument);
-        }
-
-        throw new RuntimeException(sprintf('Provided StreamInterface implementation "%s" is not available on this system.', $this->streamClass));
+        return new $this->streamClass($xmlDocument);
     }
 }

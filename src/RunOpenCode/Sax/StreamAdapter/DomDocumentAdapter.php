@@ -10,7 +10,6 @@
 namespace RunOpenCode\Sax\StreamAdapter;
 
 use RunOpenCode\Sax\Contract\StreamAdapterInterface;
-use RunOpenCode\Sax\Exception\RuntimeException;
 use RunOpenCode\Sax\Exception\StreamAdapterException;
 
 /**
@@ -60,26 +59,18 @@ class DomDocumentAdapter implements StreamAdapterInterface
      */
     public function convert($xmlDocument)
     {
-        /**
-         * @var \DOMDocument $xmlDocument
-         */
-        if (class_exists($this->streamClass)) {
+        $stream = @fopen($this->options['stream'], 'r+b');
 
-            $stream = @fopen($this->options['stream'], 'r+b');
-
-            if (false === $stream) {
-                throw new StreamAdapterException(sprintf('Unable to acquire resource handler on "%s".', $this->options['stream']));
-            }
-
-            fwrite($stream, $xmlDocument->saveXML($this->options['save_xml_options']));
-
-            if (false === rewind($stream)) {
-                throw new StreamAdapterException('Unable to to rewind stream.');
-            }
-
-            return new $this->streamClass($stream);
+        if (false === $stream) {
+            throw new StreamAdapterException(sprintf('Unable to acquire resource handler on "%s".', $this->options['stream']));
         }
 
-        throw new RuntimeException(sprintf('Provided StreamInterface implementation "%s" is not available on this system.', $this->streamClass));
+        fwrite($stream, $xmlDocument->saveXML($this->options['save_xml_options']));
+
+        if (false === @rewind($stream)) {
+            throw new StreamAdapterException('Unable to to rewind stream.');
+        }
+
+        return new $this->streamClass($stream);
     }
 }
