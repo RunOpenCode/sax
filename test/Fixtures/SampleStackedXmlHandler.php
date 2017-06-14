@@ -68,7 +68,7 @@ class SampleStackedXmlHandler extends AbstractStackedSaxHandler
      */
     protected function handleOnElementStart($parser, $name, $attributes)
     {
-        // noop
+        $this->output[] = $this->getStackSize();
     }
 
     /**
@@ -76,6 +76,6 @@ class SampleStackedXmlHandler extends AbstractStackedSaxHandler
      */
     protected function handleOnElementEnd($parser, $name)
     {
-        // noop
+        $this->output[] = $this->getStackSize();
     }
 }

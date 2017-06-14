@@ -11,7 +11,6 @@ namespace RunOpenCode\Sax\Handler;
 
 use Psr\Http\Message\StreamInterface;
 use RunOpenCode\Sax\Contract\SaxHandlerInterface;
-use RunOpenCode\Sax\Exception\ParseException;
 
 /**
  * Class AbstractSaxHandler
@@ -151,21 +150,21 @@ abstract class AbstractSaxHandler implements SaxHandlerInterface
      */
     private function attachHandlers($parser)
     {
-        xml_set_element_handler(
-            $parser,
-            \Closure::bind(function ($parser, $name, $attributes) {
-                $this->onElementStart($parser, $name, $attributes);
-            }, $this),
-            \Closure::bind(function ($parser, $name) {
-                $this->onElementEnd($parser, $name);
-            }, $this)
-        );
+        $onElementStart = \Closure::bind(function ($parser, $name, $attributes) {
+            $this->onElementStart($parser, $name, $attributes);
+        }, $this);
 
-        xml_set_character_data_handler(
-            $parser,
-            \Closure::bind(function ($parser, $data) {
-                $this->onElementData($parser, $data);
-            }, $this));
+        $onElementEnd = \Closure::bind(function ($parser, $name) {
+            $this->onElementEnd($parser, $name);
+        }, $this);
+
+        $onElementData =  \Closure::bind(function ($parser, $data) {
+            $this->onElementData($parser, $data);
+        }, $this);
+
+        xml_set_element_handler($parser, $onElementStart, $onElementEnd);
+
+        xml_set_character_data_handler($parser, $onElementData);
 
         return $this;
     }

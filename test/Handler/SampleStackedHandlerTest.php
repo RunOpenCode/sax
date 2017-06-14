@@ -25,15 +25,39 @@ class SampleStackedHandlerTest extends TestCase
         $result = $handler->parse(new Stream(fopen(__DIR__ . '/../Fixtures/sample.xml', 'r+b')));
 
         $this->assertSame([
+            1,
+            2,
+            3,
             'COPYRIGHT',
+            2,
+            3,
             'NO',
+            2,
+            3,
             'DATE',
+            2,
+            3,
             'TYPE',
+            2,
+            1,
+            2,
+            3,
             'CODE',
+            2,
+            3,
             'COUNTRY',
+            2,
+            3,
             'CURRENCY',
+            2,
+            3,
             'UNIT',
-            'MIDDLE_RATE'
+            2,
+            3,
+            'MIDDLE_RATE',
+            2,
+            1,
+            0,
         ], $result);
     }
 }
