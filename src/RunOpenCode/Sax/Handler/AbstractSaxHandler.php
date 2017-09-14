@@ -11,6 +11,7 @@ namespace RunOpenCode\Sax\Handler;
 
 use Psr\Http\Message\StreamInterface;
 use RunOpenCode\Sax\Contract\SaxHandlerInterface;
+use RunOpenCode\Sax\Exception\RuntimeException;
 
 /**
  * Class AbstractSaxHandler
@@ -34,7 +35,13 @@ abstract class AbstractSaxHandler implements SaxHandlerInterface
     public function __construct(array $options = array())
     {
         $this->options = array_merge(array(
-            'buffer_size' => 4096,
+            'buffer_size'   => 4096,
+            'case_folding'  => true,
+            'namespaces'    => false,
+            'separator'     => ':',
+            'encoding'      => null,
+            'skip_tagstart' => null,
+            'skip_white'    => null,
         ), $options);
     }
 
@@ -43,7 +50,23 @@ abstract class AbstractSaxHandler implements SaxHandlerInterface
      */
     final public function parse(StreamInterface $stream)
     {
-        $parser = xml_parser_create();
+        $parser = (true === $this->options['namespaces'])
+            ?
+            xml_parser_create_ns($this->options['encoding'], $this->options['separator'])
+            :
+            xml_parser_create($this->options['encoding']);
+
+        if (false === $this->options['case_folding']) {
+            xml_parser_set_option($parser, XML_OPTION_CASE_FOLDING, 0);
+        }
+
+        if (null === $this->options['skip_tagstart']) {
+            xml_parser_set_option($parser, XML_OPTION_SKIP_TAGSTART, $this->options['skip_tagstart']);
+        }
+
+        if (null === $this->options['skip_white']) {
+            xml_parser_set_option($parser, XML_OPTION_TARGET_ENCODING, $this->options['skip_white']);
+        }
 
         $this->onDocumentStart($parser, $stream);
 
@@ -100,6 +123,29 @@ abstract class AbstractSaxHandler implements SaxHandlerInterface
      * @param StreamInterface $stream XML stream.
      */
     abstract protected function onDocumentEnd($parser, $stream);
+
+    /**
+     * Start namespace declaration handler, executed when namespace declaration started.
+     *
+     * @param resource $parser Parser handler.
+     * @param string $prefix Namespace reference within an XML object.
+     * @param string $uri Uniform Resource Identifier (URI) of namespace.
+     */
+    protected function onNamespaceDeclarationStart($parser, $prefix, $uri)
+    {
+        throw new RuntimeException(sprintf('When namespace support is on, method "%s" must be overridden.', __METHOD__));
+    }
+
+    /**
+     * End namespace declaration handler, executed when namespace declaration ended.
+     *
+     * @param resource $parser Parser handler.
+     * @param string $prefix Namespace reference within an XML object.
+     */
+    protected function onNamespaceDeclarationEnd($parser , string $prefix)
+    {
+        throw new RuntimeException(sprintf('When namespace support is on, method "%s" must be overridden.', __METHOD__));
+    }
 
     /**
      * Parsing error handler.
