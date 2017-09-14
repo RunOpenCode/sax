@@ -200,17 +200,32 @@ abstract class AbstractSaxHandler implements SaxHandlerInterface
             $this->onElementStart($parser, $name, $attributes);
         }, $this);
 
-        $onElementEnd = \Closure::bind(function ($parser, $name) {
+        $onElementEnd   = \Closure::bind(function ($parser, $name) {
             $this->onElementEnd($parser, $name);
         }, $this);
 
-        $onElementData =  \Closure::bind(function ($parser, $data) {
+        $onElementData  =  \Closure::bind(function ($parser, $data) {
             $this->onElementData($parser, $data);
         }, $this);
 
         xml_set_element_handler($parser, $onElementStart, $onElementEnd);
 
         xml_set_character_data_handler($parser, $onElementData);
+
+        if ($this->options['namespaces']) {
+
+            $onNamespaceDeclarationStart = \Closure::bind(function ($parser, $prefix, $uri) {
+                $this->onNamespaceDeclarationStart($parser, $prefix, $uri);
+            }, $this);
+
+            $onNamespaceDeclarationEnd   = \Closure::bind(function ($parser, $prefix) {
+                $this->onNamespaceDeclarationEnd($parser, $prefix);
+            }, $this);
+
+            xml_set_start_namespace_decl_handler($parser, $onNamespaceDeclarationStart);
+
+            xml_set_end_namespace_decl_handler($parser, $onNamespaceDeclarationEnd);
+        }
 
         return $this;
     }
