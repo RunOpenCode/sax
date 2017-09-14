@@ -65,7 +65,7 @@ abstract class AbstractSaxHandler implements SaxHandlerInterface
         }
 
         if (null === $this->options['skip_white']) {
-            xml_parser_set_option($parser, XML_OPTION_TARGET_ENCODING, $this->options['skip_white']);
+            xml_parser_set_option($parser, XML_OPTION_SKIP_WHITE, $this->options['skip_white']);
         }
 
         $this->onDocumentStart($parser, $stream);
