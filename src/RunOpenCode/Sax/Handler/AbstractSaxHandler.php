@@ -39,7 +39,7 @@ abstract class AbstractSaxHandler implements SaxHandlerInterface
             'case_folding'  => true,
             'namespaces'    => false,
             'separator'     => ':',
-            'encoding'      => null,
+            'encoding'      => 'UTF-8',
             'skip_tagstart' => null,
             'skip_white'    => null,
         ), $options);
