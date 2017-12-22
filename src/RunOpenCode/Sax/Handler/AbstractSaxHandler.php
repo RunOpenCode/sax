@@ -28,6 +28,21 @@ abstract class AbstractSaxHandler implements SaxHandlerInterface
     protected $options;
 
     /**
+     * @var string|null
+     */
+    private $currentElement = null;
+
+    /**
+     * @var int
+     */
+    private $stackSize = 0;
+
+    /**
+     * @var string|null
+     */
+    private $dataBuffer = null;
+
+    /**
      * AbstractSaxHandler constructor.
      *
      * @param array $options
@@ -197,15 +212,28 @@ abstract class AbstractSaxHandler implements SaxHandlerInterface
     private function attachHandlers($parser)
     {
         $onElementStart = \Closure::bind(function ($parser, $name, $attributes) {
+            $this->currentElement = $name;
+            $this->stackSize++;
+            $this->dataBuffer = null;
+
             $this->onElementStart($parser, $name, $attributes);
         }, $this);
 
         $onElementEnd   = \Closure::bind(function ($parser, $name) {
+            $this->currentElement = null;
+            $this->stackSize--;
+
+            if (null !== $this->dataBuffer) {
+                $this->onElementData($parser, $this->dataBuffer);
+            }
+
+            $this->dataBuffer = null;
+
             $this->onElementEnd($parser, $name);
         }, $this);
 
         $onElementData  =  \Closure::bind(function ($parser, $data) {
-            $this->onElementData($parser, $data);
+            $this->dataBuffer .= $data;
         }, $this);
 
         xml_set_element_handler($parser, $onElementStart, $onElementEnd);
