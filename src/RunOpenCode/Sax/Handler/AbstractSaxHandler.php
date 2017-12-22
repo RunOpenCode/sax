@@ -11,7 +11,6 @@ namespace RunOpenCode\Sax\Handler;
 
 use Psr\Http\Message\StreamInterface;
 use RunOpenCode\Sax\Contract\SaxHandlerInterface;
-use RunOpenCode\Sax\Exception\RuntimeException;
 
 /**
  * Class AbstractSaxHandler
@@ -43,6 +42,11 @@ abstract class AbstractSaxHandler implements SaxHandlerInterface
     private $dataBuffer = null;
 
     /**
+     * @var array
+     */
+    private $namespaces = [];
+
+    /**
      * AbstractSaxHandler constructor.
      *
      * @param array $options
@@ -52,7 +56,6 @@ abstract class AbstractSaxHandler implements SaxHandlerInterface
         $this->options = array_merge(array(
             'buffer_size'   => 4096,
             'case_folding'  => true,
-            'namespaces'    => false,
             'separator'     => ':',
             'encoding'      => 'UTF-8',
             'skip_tagstart' => null,
@@ -140,29 +143,6 @@ abstract class AbstractSaxHandler implements SaxHandlerInterface
     abstract protected function onDocumentEnd($parser, $stream);
 
     /**
-     * Start namespace declaration handler, executed when namespace declaration started.
-     *
-     * @param resource $parser Parser handler.
-     * @param string $prefix Namespace reference within an XML object.
-     * @param string $uri Uniform Resource Identifier (URI) of namespace.
-     */
-    protected function onNamespaceDeclarationStart($parser, $prefix, $uri)
-    {
-        throw new RuntimeException(sprintf('When namespace support is on, method "%s" must be overridden.', __METHOD__));
-    }
-
-    /**
-     * End namespace declaration handler, executed when namespace declaration ended.
-     *
-     * @param resource $parser Parser handler.
-     * @param string $prefix Namespace reference within an XML object.
-     */
-    protected function onNamespaceDeclarationEnd($parser, $prefix)
-    {
-        throw new RuntimeException(sprintf('When namespace support is on, method "%s" must be overridden.', __METHOD__));
-    }
-
-    /**
      * Parsing error handler.
      *
      * @param string $message Parsing error message.
@@ -180,6 +160,43 @@ abstract class AbstractSaxHandler implements SaxHandlerInterface
      * @return mixed Parsing result
      */
     abstract protected function getResult();
+
+    /**
+     * Start namespace declaration handler, executed when namespace declaration started.
+     *
+     * @param resource $parser Parser handler.
+     * @param string $prefix Namespace reference within an XML object.
+     * @param string $uri Uniform Resource Identifier (URI) of namespace.
+     */
+    protected function onNamespaceDeclarationStart($parser, $prefix, $uri)
+    {
+        // noop
+    }
+
+    /**
+     * End namespace declaration handler, executed when namespace declaration ended.
+     *
+     * @param resource $parser Parser handler.
+     * @param string $prefix Namespace reference within an XML object.
+     */
+    protected function onNamespaceDeclarationEnd($parser, $prefix)
+    {
+        // noop
+    }
+
+    /**
+     * Get declared namespaces.
+     *
+     * Retrieve declared namespaces as associative array where keys are
+     * used prefixes within XML document. Note that only processed namespace
+     * declarations will be provided.
+     *
+     * @return array
+     */
+    final protected function getDeclaredNamespaces()
+    {
+        return $this->namespaces;
+    }
 
     /**
      * Parse path to XML document/string content.
@@ -236,24 +253,22 @@ abstract class AbstractSaxHandler implements SaxHandlerInterface
             $this->dataBuffer .= $data;
         }, $this);
 
+        $onNamespaceDeclarationStart = \Closure::bind(function ($parser, $prefix, $uri) {
+            $this->namespaces[$prefix] = $uri;
+            $this->onNamespaceDeclarationStart($parser, $prefix, $uri);
+        }, $this);
+
+        $onNamespaceDeclarationEnd = \Closure::bind(function ($parser, $prefix) {
+            $this->onNamespaceDeclarationEnd($parser, $prefix);
+        }, $this);
+
         xml_set_element_handler($parser, $onElementStart, $onElementEnd);
 
         xml_set_character_data_handler($parser, $onElementData);
 
-        if ($this->options['namespaces']) {
+        xml_set_start_namespace_decl_handler($parser, $onNamespaceDeclarationStart);
 
-            $onNamespaceDeclarationStart = \Closure::bind(function ($parser, $prefix, $uri) {
-                $this->onNamespaceDeclarationStart($parser, $prefix, $uri);
-            }, $this);
-
-            $onNamespaceDeclarationEnd   = \Closure::bind(function ($parser, $prefix) {
-                $this->onNamespaceDeclarationEnd($parser, $prefix);
-            }, $this);
-
-            xml_set_start_namespace_decl_handler($parser, $onNamespaceDeclarationStart);
-
-            xml_set_end_namespace_decl_handler($parser, $onNamespaceDeclarationEnd);
-        }
+        xml_set_end_namespace_decl_handler($parser, $onNamespaceDeclarationEnd);
 
         return $this;
     }
