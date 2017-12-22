@@ -68,11 +68,7 @@ abstract class AbstractSaxHandler implements SaxHandlerInterface
      */
     final public function parse(StreamInterface $stream)
     {
-        $parser = (true === $this->options['namespaces'])
-            ?
-            xml_parser_create_ns($this->options['encoding'], $this->options['separator'])
-            :
-            xml_parser_create($this->options['encoding']);
+        $parser = xml_parser_create_ns($this->options['encoding'], $this->options['separator']);
 
         if (false === $this->options['case_folding']) {
             xml_parser_set_option($parser, XML_OPTION_CASE_FOLDING, 0);
@@ -241,7 +237,7 @@ abstract class AbstractSaxHandler implements SaxHandlerInterface
         $onElementEnd   = \Closure::bind(function ($parser, $name) {
             $name                 = $this->normalize($name);
             $this->currentElement = null;
-            
+
             $this->stackSize--;
 
             if (null !== $this->dataBuffer) {
