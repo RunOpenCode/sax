@@ -229,15 +229,19 @@ abstract class AbstractSaxHandler implements SaxHandlerInterface
     private function attachHandlers($parser)
     {
         $onElementStart = \Closure::bind(function ($parser, $name, $attributes) {
+            $name                 = $this->normalize($name);
             $this->currentElement = $name;
+            $this->dataBuffer     = null;
+
             $this->stackSize++;
-            $this->dataBuffer = null;
 
             $this->onElementStart($parser, $name, $attributes);
         }, $this);
 
         $onElementEnd   = \Closure::bind(function ($parser, $name) {
+            $name                 = $this->normalize($name);
             $this->currentElement = null;
+            
             $this->stackSize--;
 
             if (null !== $this->dataBuffer) {
@@ -254,7 +258,7 @@ abstract class AbstractSaxHandler implements SaxHandlerInterface
         }, $this);
 
         $onNamespaceDeclarationStart = \Closure::bind(function ($parser, $prefix, $uri) {
-            $this->namespaces[$prefix] = $uri;
+            $this->namespaces[$prefix] = rtrim($uri, '/');
             $this->onNamespaceDeclarationStart($parser, $prefix, $uri);
         }, $this);
 
@@ -271,5 +275,17 @@ abstract class AbstractSaxHandler implements SaxHandlerInterface
         xml_set_end_namespace_decl_handler($parser, $onNamespaceDeclarationEnd);
 
         return $this;
+    }
+
+    /**
+     * Normalize namespaced tag name.
+     *
+     * @param $name
+     *
+     * @return string
+     */
+    private function normalize($name)
+    {
+        return str_replace('/:', ':', $name);
     }
 }
