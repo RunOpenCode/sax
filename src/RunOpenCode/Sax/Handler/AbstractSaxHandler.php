@@ -157,7 +157,7 @@ abstract class AbstractSaxHandler implements SaxHandlerInterface
      * @param resource $parser Parser handler.
      * @param string $prefix Namespace reference within an XML object.
      */
-    protected function onNamespaceDeclarationEnd($parser , string $prefix)
+    protected function onNamespaceDeclarationEnd($parser, $prefix)
     {
         throw new RuntimeException(sprintf('When namespace support is on, method "%s" must be overridden.', __METHOD__));
     }
