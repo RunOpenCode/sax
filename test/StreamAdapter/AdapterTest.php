@@ -13,6 +13,7 @@ use PHPUnit\Framework\TestCase;
 use RunOpenCode\Sax\StreamAdapter\DomDocumentAdapter;
 use RunOpenCode\Sax\StreamAdapter\ResourceAdapter;
 use RunOpenCode\Sax\StreamAdapter\SimpleXmlAdapter;
+use RunOpenCode\Sax\StreamAdapter\StringAdapter;
 
 class AdapterTest extends TestCase
 {
@@ -24,6 +25,7 @@ class AdapterTest extends TestCase
         $resourceAdapter = new ResourceAdapter();
         $domDocumentAdapter = new DomDocumentAdapter();
         $simpleXmlAdapter = new SimpleXmlAdapter();
+        $stringAdapter = new StringAdapter();
 
         $resource = fopen(__DIR__ . '/../Fixtures/sample.xml', 'rb');
 
@@ -32,16 +34,26 @@ class AdapterTest extends TestCase
 
         $simpleXmlElement = new \SimpleXMLElement(file_get_contents(__DIR__ . '/../Fixtures/sample.xml'));
 
+        $xmlString = '<?xml version="1.0" encoding="UTF-8"?><root><elem>value</elem></root>';
+
         $this->assertTrue($resourceAdapter->supports($resource));
         $this->assertFalse($resourceAdapter->supports($domDocument));
         $this->assertFalse($resourceAdapter->supports($simpleXmlElement));
+        $this->assertFalse($resourceAdapter->supports($xmlString));
 
         $this->assertFalse($domDocumentAdapter->supports($resource));
         $this->assertTrue($domDocumentAdapter->supports($domDocument));
         $this->assertFalse($domDocumentAdapter->supports($simpleXmlElement));
+        $this->assertFalse($domDocumentAdapter->supports($xmlString));
 
         $this->assertFalse($simpleXmlAdapter->supports($resource));
         $this->assertFalse($simpleXmlAdapter->supports($domDocument));
         $this->assertTrue($simpleXmlAdapter->supports($simpleXmlElement));
+        $this->assertFalse($simpleXmlAdapter->supports($xmlString));
+
+        $this->assertFalse($stringAdapter->supports($resource));
+        $this->assertFalse($stringAdapter->supports($domDocument));
+        $this->assertFalse($stringAdapter->supports($simpleXmlElement));
+        $this->assertTrue($stringAdapter->supports($xmlString));
     }
 }
