@@ -16,6 +16,7 @@ use RunOpenCode\Sax\Exception\RuntimeException;
 use RunOpenCode\Sax\StreamAdapter\DomDocumentAdapter;
 use RunOpenCode\Sax\StreamAdapter\ResourceAdapter;
 use RunOpenCode\Sax\StreamAdapter\SimpleXmlAdapter;
+use RunOpenCode\Sax\StreamAdapter\StringAdapter;
 
 /**
  * Class SaxParser
@@ -83,6 +84,7 @@ class SaxParser
             new ResourceAdapter($streamClass),
             new DomDocumentAdapter($streamClass),
             new SimpleXmlAdapter($streamClass),
+            new StringAdapter($streamClass),
         ]);
     }
 
