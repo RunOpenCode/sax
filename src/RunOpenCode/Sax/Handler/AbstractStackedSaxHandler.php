@@ -53,6 +53,16 @@ abstract class AbstractStackedSaxHandler extends AbstractSaxHandler
     }
 
     /**
+     * Get current stack trace.
+     *
+     * @return array
+     */
+    protected function getStack()
+    {
+        return $this->stack;
+    }
+
+    /**
      * Get current element stack size
      *
      * @return int
