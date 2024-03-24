@@ -9,22 +9,26 @@
  */
 namespace RunOpenCode\Sax\Test\Fixtures;
 
+use Psr\Http\Message\StreamInterface;
 use RunOpenCode\Sax\Handler\AbstractStackedSaxHandler;
 
 class SampleStackedXmlHandler extends AbstractStackedSaxHandler
 {
-    protected $output;
+    /**
+     * @var array<int, mixed>
+     */
+    protected array $output;
 
-    public function __construct(array $options = array())
+    public function __construct(array $options = [])
     {
         parent::__construct($options);
-        $this->output = array();
+        $this->output = [];
     }
 
     /**
      * {@inheritdoc}
      */
-    protected function onDocumentStart($parser, $stream)
+    protected function onDocumentStart(\XMLParser $parser, StreamInterface $stream): void
     {
         // noop
     }
@@ -32,9 +36,9 @@ class SampleStackedXmlHandler extends AbstractStackedSaxHandler
     /**
      * {@inheritdoc}
      */
-    protected function onElementData($parser, $data)
+    protected function onElementData(\XMLParser $parser, string $data): void
     {
-        if (trim($data)) {
+        if (\trim($data)) {
             $this->output[] = $this->getCurrentElementName();
         }
     }
@@ -42,7 +46,7 @@ class SampleStackedXmlHandler extends AbstractStackedSaxHandler
     /**
      * {@inheritdoc}
      */
-    protected function onDocumentEnd($parser, $stream)
+    protected function onDocumentEnd(\XMLParser $parser, StreamInterface $stream): void
     {
         // noop
     }
@@ -50,7 +54,7 @@ class SampleStackedXmlHandler extends AbstractStackedSaxHandler
     /**
      * {@inheritdoc}
      */
-    protected function onParseError($message, $code, $lineno)
+    protected function onParseError(string $message, int $code, int $lineno): void
     {
         // noop
     }
@@ -58,15 +62,17 @@ class SampleStackedXmlHandler extends AbstractStackedSaxHandler
     /**
      * {@inheritdoc}
      */
-    protected function getResult()
+    protected function getResult(): mixed
     {
         return $this->output;
     }
 
     /**
      * {@inheritdoc}
+     *
+     * @param mixed[] $attributes
      */
-    protected function handleOnElementStart($parser, $name, $attributes)
+    protected function handleOnElementStart(\XMLParser $parser, string $name, array $attributes): void
     {
         $this->output[] = $this->getStackSize();
     }
@@ -74,7 +80,7 @@ class SampleStackedXmlHandler extends AbstractStackedSaxHandler
     /**
      * {@inheritdoc}
      */
-    protected function handleOnElementEnd($parser, $name)
+    protected function handleOnElementEnd(\XMLParser $parser, string $name): void
     {
         $this->output[] = $this->getStackSize();
     }

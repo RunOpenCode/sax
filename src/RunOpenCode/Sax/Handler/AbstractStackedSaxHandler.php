@@ -15,39 +15,41 @@ namespace RunOpenCode\Sax\Handler;
  * Sax handler prototype with implemented elements stack.
  *
  * @package RunOpenCode\Sax\Handler
+ *
+ * @psalm-suppress DeprecatedClass
  */
 abstract class AbstractStackedSaxHandler extends AbstractSaxHandler
 {
     /**
-     * @var array Elements stack
+     * Elements stack
+     *
+     * @var string[]
      */
-    private $stack = [];
+    private array $stack = [];
 
     /**
      * {@inheritdoc}
      */
-    protected function onElementStart($parser, $name, $attributes)
+    protected function onElementStart(\XMLParser $parser, string $name, array $attributes): void
     {
-        array_push($this->stack, $name);
+        $this->stack[] = $name;
         $this->handleOnElementStart($parser, $name, $attributes);
     }
 
     /**
      * {@inheritdoc}
      */
-    protected function onElementEnd($parser, $name)
+    protected function onElementEnd(\XMLParser $parser, string $name): void
     {
-        array_pop($this->stack);
+        \array_pop($this->stack);
         $this->handleOnElementEnd($parser, $name);
     }
 
     /**
      * Get current processing element name (uppercase), or null, if there is no element on stack
      * (processing didn't started or it is ended)
-     *
-     * @return string|null
      */
-    protected function getCurrentElementName()
+    protected function getCurrentElementName(): ?string
     {
         return (($count = count($this->stack)) > 0) ? $this->stack[$count-1] : null;
     }
@@ -55,19 +57,17 @@ abstract class AbstractStackedSaxHandler extends AbstractSaxHandler
     /**
      * Get current stack trace.
      *
-     * @return array
+     * @return mixed[]
      */
-    protected function getStack()
+    protected function getStack(): array
     {
         return $this->stack;
     }
 
     /**
      * Get current element stack size
-     *
-     * @return int
      */
-    protected function getStackSize()
+    protected function getStackSize(): int
     {
         return count($this->stack);
     }
@@ -75,17 +75,12 @@ abstract class AbstractStackedSaxHandler extends AbstractSaxHandler
     /**
      * Element start handler, executed when XML tag is entered.
      *
-     * @param resource $parser Parser handler.
-     * @param string $name Tag name.
-     * @param array $attributes Element attributes.
+     * @param mixed[] $attributes
      */
-    abstract protected function handleOnElementStart($parser, $name, $attributes);
+    abstract protected function handleOnElementStart(\XMLParser $parser, string $name, array $attributes): void;
 
     /**
      * Element end handler, executed when XML tag is leaved.
-     *
-     * @param resource $parser Parser handler.
-     * @param string $name Tag name.
      */
-    abstract protected function handleOnElementEnd($parser, $name);
+    abstract protected function handleOnElementEnd(\XMLParser $parser, string $name): void;
 }

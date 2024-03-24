@@ -7,6 +7,7 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
+
 namespace RunOpenCode\Sax\Test\Handler;
 
 use GuzzleHttp\Psr7\Stream;
@@ -15,14 +16,15 @@ use RunOpenCode\Sax\Test\Fixtures\SampleStackedXmlHandler;
 
 class SampleStackedHandlerTest extends TestCase
 {
-    /**
-     * @test
-     */
-    public function parse()
+    public function testParse(): void
     {
         $handler = new SampleStackedXmlHandler();
 
-        $result = $handler->parse(new Stream(fopen(__DIR__ . '/../Fixtures/sample.xml', 'r+b')));
+        /**
+         * @var resource $stream
+         */
+        $stream = fopen(__DIR__ . '/../Fixtures/sample.xml', 'r+b');
+        $result = $handler->parse(new Stream($stream));
 
         $this->assertSame([
             1,

@@ -24,10 +24,11 @@ interface SaxHandlerInterface
      * Parse XML content and get result.
      *
      * @param StreamInterface $stream Streamed XML document.
+     * @param callable|null $callback Custom function which may be invoked by custom handler.
      *
      * @return mixed Parsing result
      *
      * @throws \Exception If parsing is impossible.
      */
-    public function parse(StreamInterface $stream);
+    public function parse(StreamInterface $stream, ?callable $callback = null): mixed;
 }

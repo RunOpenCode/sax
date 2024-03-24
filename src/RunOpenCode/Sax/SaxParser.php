@@ -7,8 +7,10 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
+
 namespace RunOpenCode\Sax;
 
+use GuzzleHttp\Psr7\Stream;
 use Psr\Http\Message\StreamInterface;
 use RunOpenCode\Sax\Contract\SaxHandlerInterface;
 use RunOpenCode\Sax\Contract\StreamAdapterInterface;
@@ -30,16 +32,16 @@ class SaxParser
     /**
      * @var StreamAdapterInterface[]
      */
-    private $streamAdapters;
+    private array $streamAdapters;
 
     /**
      * SaxParser constructor.
      *
      * @param StreamAdapterInterface[] $streamAdapters Stream adapters to register to parser.
      */
-    public function __construct(array $streamAdapters = array())
+    public function __construct(array $streamAdapters = [])
     {
-        $this->streamAdapters = array();
+        $this->streamAdapters = [];
 
         foreach ($streamAdapters as $streamAdapter) {
             $this->addStreamAdapter($streamAdapter);
@@ -52,7 +54,7 @@ class SaxParser
      * @param StreamAdapterInterface $streamAdapter Stream adapter to register.
      * @return SaxParser $this Fluent interface.
      */
-    public function addStreamAdapter(StreamAdapterInterface $streamAdapter)
+    public function addStreamAdapter(StreamAdapterInterface $streamAdapter): self
     {
         $this->streamAdapters[] = $streamAdapter;
         return $this;
@@ -66,7 +68,7 @@ class SaxParser
      *
      * @return mixed Parsing result.
      */
-    public function parse(SaxHandlerInterface $saxHandler, $xmlDocument)
+    public function parse(SaxHandlerInterface $saxHandler, mixed $xmlDocument): mixed
     {
         $xmlDocument = ($xmlDocument instanceof StreamInterface) ? $xmlDocument : $this->getDocumentStream($xmlDocument);
         return $saxHandler->parse($xmlDocument);
@@ -78,8 +80,12 @@ class SaxParser
      * @param string $streamClass FQCN to use when converting to XML document source to stream.
      * @return SaxParser New SAX parser instance.
      */
-    public static function factory($streamClass = 'GuzzleHttp\\Psr7\\Stream')
+    public static function factory(string $streamClass = Stream::class): self
     {
+        /**
+         * @phpstan-ignore-next-line
+         *@psalm-suppress UnsafeInstantiation
+         */
         return new static([
             new ResourceAdapter($streamClass),
             new DomDocumentAdapter($streamClass),
@@ -96,7 +102,7 @@ class SaxParser
      *
      * @throws \RuntimeException
      */
-    private function getDocumentStream($xmlDocument)
+    private function getDocumentStream(mixed $xmlDocument): StreamInterface
     {
         /**
          * @var StreamAdapterInterface $streamAdapter
@@ -108,6 +114,6 @@ class SaxParser
             }
         }
 
-        throw new RuntimeException(sprintf('Suitable XML document stream adapter is not registered for XML document of type "%s".', is_object($xmlDocument) ? get_class($xmlDocument) : gettype($xmlDocument)));
+        throw new RuntimeException(sprintf('Suitable XML document stream adapter is not registered for XML document of type "%s".', \is_object($xmlDocument) ? \get_class($xmlDocument) : \gettype($xmlDocument)));
     }
 }
