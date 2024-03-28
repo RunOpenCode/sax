@@ -7,6 +7,7 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
+
 namespace RunOpenCode\Sax\Handler;
 
 use Psr\Http\Message\StreamInterface;
@@ -18,68 +19,89 @@ use RunOpenCode\Sax\Contract\SaxHandlerInterface;
  * Sax handler prototype.
  *
  * @package RunOpenCode\Sax
+ *
+ * @phpstan-type SaxHandlerOptions = array{
+ *      buffer_size: int,
+ *      case_folding: bool,
+ *      separator: string,
+ *      encoding: string,
+ *      skip_tagstart: int|null,
+ *      skip_white: int|null
+ * }
+ * @phpstan-type SaxHandlerConfiguration = array{
+ *       buffer_size?: int,
+ *       case_folding?: bool,
+ *       separator?: string,
+ *       encoding?: string,
+ *       skip_tagstart?: int|null,
+ *       skip_white?: int|null
+ *  }
+ *
+ * @deprecated Use RunOpenCode\Sax\Handler\AbstractStackedSaxHandler instead.
  */
 abstract class AbstractSaxHandler implements SaxHandlerInterface
 {
     /**
-     * @var array
+     * @var SaxHandlerOptions
      */
-    protected $options;
+    protected array $options;
+
+    private ?string $currentElement = null;
+
+    private int $stackSize = 0;
+
+    private ?string $dataBuffer = null;
 
     /**
-     * @var string|null
+     * @var string[]
      */
-    private $currentElement = null;
+    private array $namespaces = [];
 
     /**
-     * @var int
+     * @var callable|null
      */
-    private $stackSize = 0;
+    protected mixed $callback = null;
 
     /**
-     * @var string|null
+     * @param SaxHandlerConfiguration $options
      */
-    private $dataBuffer = null;
-
-    /**
-     * @var array
-     */
-    private $namespaces = [];
-
-    /**
-     * AbstractSaxHandler constructor.
-     *
-     * @param array $options
-     */
-    public function __construct(array $options = array())
+    public function __construct(array $options = [])
     {
-        $this->options = array_merge(array(
-            'buffer_size'   => 4096,
-            'case_folding'  => true,
-            'separator'     => ':',
-            'encoding'      => 'UTF-8',
+        /**
+         * @psalm-suppress InvalidPropertyAssignmentValue
+         */
+        $this->options = \array_merge([
+            'buffer_size' => 4096,
+            'case_folding' => true,
+            'separator' => ':',
+            'encoding' => 'UTF-8',
             'skip_tagstart' => null,
-            'skip_white'    => null,
-        ), $options);
+            'skip_white' => null,
+        ], $options);
     }
 
     /**
      * {@inheritdoc}
      */
-    final public function parse(StreamInterface $stream)
+    final public function parse(StreamInterface $stream, ?callable $callback = null): mixed
     {
-        $parser = xml_parser_create_ns($this->options['encoding'], $this->options['separator']);
+
+        $this->callback = $callback;
+        $encoding = $this->options['encoding'];
+        $separator = $this->options['separator'];
+
+        $parser = \xml_parser_create_ns($encoding, $separator);
 
         if (false === $this->options['case_folding']) {
-            xml_parser_set_option($parser, XML_OPTION_CASE_FOLDING, 0);
+            \xml_parser_set_option($parser, XML_OPTION_CASE_FOLDING, 0);
         }
 
-        if (null === $this->options['skip_tagstart']) {
-            xml_parser_set_option($parser, XML_OPTION_SKIP_TAGSTART, $this->options['skip_tagstart']);
+        if (null !== $this->options['skip_tagstart']) {
+            \xml_parser_set_option($parser, XML_OPTION_SKIP_TAGSTART, $this->options['skip_tagstart']);
         }
 
-        if (null === $this->options['skip_white']) {
-            xml_parser_set_option($parser, XML_OPTION_SKIP_WHITE, $this->options['skip_white']);
+        if (null !== $this->options['skip_white']) {
+            \xml_parser_set_option($parser, XML_OPTION_SKIP_WHITE, $this->options['skip_white']);
         }
 
         $this->onDocumentStart($parser, $stream);
@@ -90,62 +112,49 @@ abstract class AbstractSaxHandler implements SaxHandlerInterface
 
         $this->onDocumentEnd($parser, $stream);
 
-        xml_parser_free($parser);
+        \xml_parser_free($parser);
 
         $stream->close();
 
         return $this->getResult();
     }
 
+    public function getCurrentElement(): ?string
+    {
+        return $this->currentElement;
+    }
+
     /**
      * Document start handler, executed when parsing process started.
-     *
-     * @param resource $parser Parser handler.
-     * @param StreamInterface $stream XML stream.
      */
-    abstract protected function onDocumentStart($parser, $stream);
+    abstract protected function onDocumentStart(\XMLParser $parser, StreamInterface $stream): void;
 
     /**
      * Element start handler, executed when XML tag is entered.
      *
-     * @param resource $parser Parser handler.
-     * @param string $name Tag name.
-     * @param array $attributes Element attributes.
+     * @param string[] $attributes
      */
-    abstract protected function onElementStart($parser, $name, $attributes);
+    abstract protected function onElementStart(\XMLParser $parser, string $name, array $attributes): void;
 
     /**
      * Element CDATA handler, executed when XML tag CDATA is parsed.
-     *
-     * @param resource $parser Parser handler.
-     * @param string $data Element CDATA.
      */
-    abstract protected function onElementData($parser, $data);
+    abstract protected function onElementData(\XMLParser $parser, string $data): void;
 
     /**
      * Element end handler, executed when XML tag is leaved.
-     *
-     * @param resource $parser Parser handler.
-     * @param string $name Tag name.
      */
-    abstract protected function onElementEnd($parser, $name);
+    abstract protected function onElementEnd(\XMLParser $parser, string $name): void;
 
     /**
      * Document end handler, executed when parsing process ended.
-     *
-     * @param resource $parser Parser handler.
-     * @param StreamInterface $stream XML stream.
      */
-    abstract protected function onDocumentEnd($parser, $stream);
+    abstract protected function onDocumentEnd(\XMLParser $parser, StreamInterface $stream): void;
 
     /**
      * Parsing error handler.
-     *
-     * @param string $message Parsing error message.
-     * @param int $code Error code.
-     * @param int $lineno XML line number which caused error.
      */
-    abstract protected function onParseError($message, $code, $lineno);
+    abstract protected function onParseError(string $message, int $code, int $lineno): void;
 
     /**
      * Get parsing result.
@@ -155,27 +164,20 @@ abstract class AbstractSaxHandler implements SaxHandlerInterface
      *
      * @return mixed Parsing result
      */
-    abstract protected function getResult();
+    abstract protected function getResult(): mixed;
 
     /**
      * Start namespace declaration handler, executed when namespace declaration started.
-     *
-     * @param resource $parser Parser handler.
-     * @param string $prefix Namespace reference within an XML object.
-     * @param string $uri Uniform Resource Identifier (URI) of namespace.
      */
-    protected function onNamespaceDeclarationStart($parser, $prefix, $uri)
+    protected function onNamespaceDeclarationStart(\XMLParser $parser, string $prefix, string $uri): void
     {
         // noop
     }
 
     /**
      * End namespace declaration handler, executed when namespace declaration ended.
-     *
-     * @param resource $parser Parser handler.
-     * @param string $prefix Namespace reference within an XML object.
      */
-    protected function onNamespaceDeclarationEnd($parser, $prefix)
+    protected function onNamespaceDeclarationEnd(\XMLParser $parser, string $prefix): void
     {
         // noop
     }
@@ -187,9 +189,9 @@ abstract class AbstractSaxHandler implements SaxHandlerInterface
      * used prefixes within XML document. Note that only processed namespace
      * declarations will be provided.
      *
-     * @return array
+     * @return string[]
      */
-    final protected function getDeclaredNamespaces()
+    final protected function getDeclaredNamespaces(): array
     {
         return $this->namespaces;
     }
@@ -197,20 +199,27 @@ abstract class AbstractSaxHandler implements SaxHandlerInterface
     /**
      * Parse path to XML document/string content.
      *
-     * @param resource $parser Parser.
-     * @param StreamInterface $stream XML document stream.
-     * @return AbstractSaxHandler $this Fluent interface.
-     *
      * @throws \RuntimeException
      */
-    private function process($parser, StreamInterface $stream)
+    private function process(\XMLParser $parser, StreamInterface $stream): self
     {
         if ($stream->eof()) {
             $stream->rewind();
         }
 
-        while ($data = $stream->read($this->options['buffer_size'])) {
-            xml_parse($parser, $data, $stream->eof()) || $this->onParseError(xml_error_string(xml_get_error_code($parser)), xml_get_error_code($parser), xml_get_current_line_number($parser));
+        /**
+         * @var ?int $bufferSize
+         */
+        $bufferSize = $this->options['buffer_size'];
+
+        \assert(null !== $bufferSize);
+
+        while ($data = $stream->read($bufferSize)) {
+            /**
+             * @phpstan-ignore-next-line
+             * @psalm-suppress PossiblyNullArgument
+             */
+            \xml_parse($parser, $data, $stream->eof()) || $this->onParseError(\xml_error_string(\xml_get_error_code($parser)), \xml_get_error_code($parser), \xml_get_current_line_number($parser));
         }
 
         return $this;
@@ -219,26 +228,30 @@ abstract class AbstractSaxHandler implements SaxHandlerInterface
     /**
      * Attach handlers.
      *
-     * @param resource $parser XML parser.
      * @return AbstractSaxHandler $this Fluent interface.
      */
-    private function attachHandlers($parser)
+    private function attachHandlers(\XMLParser $parser): self
     {
-        $onElementStart = \Closure::bind(function ($parser, $name, $attributes) {
-            $name                 = $this->normalize($name);
+        /**
+         * @param string[] $attributes
+         * @var \Closure $onElementStart
+         */
+        $onElementStart = \Closure::bind(function (\XMLParser $parser, string $name, array $attributes): void {
+            $name = $this->normalize($name);
             $this->currentElement = $name;
-            $this->dataBuffer     = null;
+            $this->dataBuffer = null;
 
             $this->stackSize++;
 
             $this->onElementStart($parser, $name, $attributes);
         }, $this);
 
-        $onElementEnd   = \Closure::bind(function ($parser, $name) {
-            $name                 = $this->normalize($name);
-            $this->currentElement = null;
+        /**
+         * @var \Closure $onElementEnd
+         */
+        $onElementEnd = \Closure::bind(function (\XMLParser $parser, string $name): void {
+            $name = $this->normalize($name);
 
-            $this->stackSize--;
 
             if (null !== $this->dataBuffer) {
                 $this->onElementData($parser, $this->dataBuffer);
@@ -247,41 +260,49 @@ abstract class AbstractSaxHandler implements SaxHandlerInterface
             $this->dataBuffer = null;
 
             $this->onElementEnd($parser, $name);
+            $this->stackSize--;
+            $this->currentElement = null;
+
         }, $this);
 
-        $onElementData  =  \Closure::bind(function ($parser, $data) {
+        /**
+         * @var \Closure $onElementData
+         */
+        $onElementData = \Closure::bind(function (\XMLParser $parser, ?string $data): void {
             $this->dataBuffer .= $data;
         }, $this);
 
-        $onNamespaceDeclarationStart = \Closure::bind(function ($parser, $prefix, $uri) {
-            $this->namespaces[$prefix] = rtrim($uri, '/');
+        /**
+         * @var \Closure $onNamespaceDeclarationStart
+         */
+        $onNamespaceDeclarationStart = \Closure::bind(function (\XMLParser $parser, string $prefix, string $uri): void {
+            $this->namespaces[$prefix] = \rtrim($uri, '/');
             $this->onNamespaceDeclarationStart($parser, $prefix, $uri);
         }, $this);
 
-        $onNamespaceDeclarationEnd = \Closure::bind(function ($parser, $prefix) {
+        /**
+         * @var \Closure $onNamespaceDeclarationEnd
+         */
+        $onNamespaceDeclarationEnd = \Closure::bind(function (\XMLParser $parser, string $prefix): void {
             $this->onNamespaceDeclarationEnd($parser, $prefix);
         }, $this);
 
-        xml_set_element_handler($parser, $onElementStart, $onElementEnd);
+        \xml_set_element_handler($parser, $onElementStart, $onElementEnd);
 
-        xml_set_character_data_handler($parser, $onElementData);
+        \xml_set_character_data_handler($parser, $onElementData);
 
-        xml_set_start_namespace_decl_handler($parser, $onNamespaceDeclarationStart);
+        \xml_set_start_namespace_decl_handler($parser, $onNamespaceDeclarationStart);
 
-        xml_set_end_namespace_decl_handler($parser, $onNamespaceDeclarationEnd);
+        \xml_set_end_namespace_decl_handler($parser, $onNamespaceDeclarationEnd);
 
         return $this;
     }
 
     /**
      * Normalize namespaced tag name.
-     *
-     * @param $name
-     *
-     * @return string
      */
-    private function normalize($name)
+    private function normalize(string $name): string
     {
-        return str_replace('/:', ':', $name);
+        return \str_replace('/:', ':', $name);
     }
 }

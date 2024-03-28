@@ -7,21 +7,20 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
+
 namespace RunOpenCode\Sax\Test\StreamAdapter;
 
 use PHPUnit\Framework\TestCase;
+use RunOpenCode\Sax\Exception\RuntimeException;
 use RunOpenCode\Sax\SaxParser;
 use RunOpenCode\Sax\StreamAdapter\DomDocumentAdapter;
 use RunOpenCode\Sax\StreamAdapter\ResourceAdapter;
 use RunOpenCode\Sax\StreamAdapter\SimpleXmlAdapter;
 use RunOpenCode\Sax\Test\Fixtures\SampleXmlHandler;
 
-class ParserTest extends TestCase
+final class ParserTest extends TestCase
 {
-    /**
-     * @test
-     */
-    public function integrationTest()
+    public function testIntegration(): void
     {
         $resourceAdapter = new ResourceAdapter();
         $domDocumentAdapter = new DomDocumentAdapter();
@@ -34,31 +33,36 @@ class ParserTest extends TestCase
             ->addStreamAdapter($domDocumentAdapter)
             ->addStreamAdapter($simpleXmlAdapter);
 
-        $document = new \SimpleXMLElement(file_get_contents(__DIR__ . '/Fixtures/sample.xml'));
+        /**
+         * @var string $content
+         */
+        $content = \file_get_contents(__DIR__ . '/Fixtures/sample.xml');
+
+        $document = new \SimpleXMLElement($content);
 
         $result = $parser->parse(new SampleXmlHandler(), $document);
 
-        $this->assertTrue(is_array($result), 'Parsing should be executed.');
+        $this->assertTrue(\is_array($result), 'Parsing should be executed.');
     }
 
-    /**
-     * @test
-     */
-    public function factoryTest()
+    public function testFactory(): void
     {
-        $document = new \SimpleXMLElement(file_get_contents(__DIR__ . '/Fixtures/sample.xml'));
+        /**
+         * @var string $content
+         */
+        $content = \file_get_contents(__DIR__ . '/Fixtures/sample.xml');
+
+        $document = new \SimpleXMLElement($content);
 
         $result = SaxParser::factory()->parse(new SampleXmlHandler(), $document);
 
-        $this->assertTrue(is_array($result), 'Parsing should be executed.');
+        $this->assertTrue(\is_array($result), 'Parsing should be executed.');
     }
 
-    /**
-     * @test
-     * @expectedException \RunOpenCode\Sax\Exception\RuntimeException
-     */
-    public function notSupported()
+    public function testNotSupported(): void
     {
+        $this->expectException(RuntimeException::class);
+
         $resourceAdapter = new ResourceAdapter();
         $domDocumentAdapter = new DomDocumentAdapter();
         $simpleXmlAdapter = new SimpleXmlAdapter();
@@ -70,7 +74,8 @@ class ParserTest extends TestCase
             ->addStreamAdapter($domDocumentAdapter)
             ->addStreamAdapter($simpleXmlAdapter);
 
-        $document = new class {  };
+        $document = new class {
+        };
 
         $parser->parse(new SampleXmlHandler(), $document);
     }

@@ -15,12 +15,9 @@ use RunOpenCode\Sax\StreamAdapter\ResourceAdapter;
 use RunOpenCode\Sax\StreamAdapter\SimpleXmlAdapter;
 use RunOpenCode\Sax\StreamAdapter\StringAdapter;
 
-class AdapterTest extends TestCase
+final class AdapterTest extends TestCase
 {
-    /**
-     * @test
-     */
-    public function itDoesNotOverlapSupportedSources()
+    public function testItDoesNotOverlapSupportedSources(): void
     {
         $resourceAdapter = new ResourceAdapter();
         $domDocumentAdapter = new DomDocumentAdapter();
@@ -32,7 +29,12 @@ class AdapterTest extends TestCase
         $domDocument = new \DOMDocument();
         $domDocument->load(__DIR__ . '/../Fixtures/sample.xml');
 
-        $simpleXmlElement = new \SimpleXMLElement(file_get_contents(__DIR__ . '/../Fixtures/sample.xml'));
+        /**
+         * @var string $content
+         */
+        $content = \file_get_contents(__DIR__ . '/../Fixtures/sample.xml');
+
+        $simpleXmlElement = new \SimpleXMLElement($content);
 
         $xmlString = '<?xml version="1.0" encoding="UTF-8"?><root><elem>value</elem></root>';
 

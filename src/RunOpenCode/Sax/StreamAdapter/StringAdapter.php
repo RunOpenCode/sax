@@ -7,37 +7,37 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
+
 namespace RunOpenCode\Sax\StreamAdapter;
 
+use GuzzleHttp\Psr7\Stream;
+use Psr\Http\Message\StreamInterface;
 use RunOpenCode\Sax\Contract\StreamAdapterInterface;
 use RunOpenCode\Sax\Exception\StreamAdapterException;
 
 /**
  * Class StringAdapter
- * 
+ *
  * String adapter
- * 
+ *
  * @package RunOpenCode\Sax\StreamAdapter
  */
 class StringAdapter implements StreamAdapterInterface
 {
-    /**
-     * @var string
-     */
-    private $streamClass;
+    private string $streamClass;
 
     /**
-     * @var array
+     * @var mixed[]
      */
-    private $options;
+    private array $options;
 
     /**
      * StringAdapter constructor.
      *
      * @param string $streamClass FQCN of StreamInterface implementation, GuzzleHttp\Psr7\Stream is used by default.
-     * @param array $options Adapter options.
+     * @param mixed[] $options Adapter options.
      */
-    public function __construct($streamClass = 'GuzzleHttp\\Psr7\\Stream', array $options = array())
+    public function __construct(string $streamClass = Stream::class, array $options = [])
     {
         $this->streamClass = $streamClass;
         $this->options = array_merge(array(
@@ -48,7 +48,7 @@ class StringAdapter implements StreamAdapterInterface
     /**
      * {@inheritdoc}
      */
-    public function supports($xmlDocument)
+    public function supports(mixed $xmlDocument): bool
     {
         return is_string($xmlDocument) && 0 === stripos($xmlDocument, '<?xml');
     }
@@ -56,20 +56,33 @@ class StringAdapter implements StreamAdapterInterface
     /**
      * {@inheritdoc}
      */
-    public function convert($xmlDocument)
+    public function convert(mixed $xmlDocument): StreamInterface
     {
-        $stream = @fopen($this->options['stream'], 'r+b');
+        /** @var ?string $optionsStream */
+        $optionsStream = $this->options['stream'];
 
-        if (false === $stream) {
-            throw new StreamAdapterException(sprintf('Unable to acquire resource handler on "%s".', $this->options['stream']));
+        if (null === $optionsStream) {
+            throw new StreamAdapterException('Stream is not provided.');
         }
 
-        fwrite($stream, $xmlDocument);
+        $stream = @fopen($optionsStream, 'r+b');
+
+        if (false === $stream) {
+            throw new StreamAdapterException(sprintf('Unable to acquire resource handler on "%s".', $optionsStream));
+        }
+
+        \assert(\is_string($xmlDocument));
+
+        \fwrite($stream, $xmlDocument);
 
         if (false === @rewind($stream)) {
             throw new StreamAdapterException('Unable to to rewind stream.');
         }
 
-        return new $this->streamClass($stream);
+        $object = new $this->streamClass($stream);
+
+        \assert($object instanceof StreamInterface);
+
+        return $object;
     }
 }

@@ -1,12 +1,7 @@
 <?php
-/*
- * This file is part of the runopencode/sax, an RunOpenCode project.
- *
- * (c) 2017 RunOpenCode
- *
- * For the full copyright and license information, please view the LICENSE
- * file that was distributed with this source code.
- */
+
+declare(strict_types=1);
+
 namespace RunOpenCode\Sax\Test\Fixtures;
 
 use Psr\Http\Message\StreamInterface;
@@ -15,12 +10,17 @@ use RunOpenCode\Sax\Handler\AbstractSaxHandler;
 /**
  * @phpstan-import-type SaxHandlerConfiguration from \RunOpenCode\Sax\Handler\AbstractSaxHandler
  */
-class SampleXmlHandler extends AbstractSaxHandler
+final class CallbackXmlHandler extends AbstractSaxHandler
 {
     /**
      * @var array<int, array<string, mixed>>
      */
     protected array $output;
+
+    /**
+     * @var array<string, mixed>
+     */
+    private ?array $itemData = null;
 
     /**
      * @param SaxHandlerConfiguration $options
@@ -36,7 +36,7 @@ class SampleXmlHandler extends AbstractSaxHandler
      */
     protected function onDocumentStart(\XMLParser $parser, StreamInterface $stream): void
     {
-        $this->output[] = ['event' => 'onDocumentStart'];
+        // NOOP
     }
 
     /**
@@ -46,7 +46,9 @@ class SampleXmlHandler extends AbstractSaxHandler
      */
     protected function onElementStart(\XMLParser $parser, string $name, array $attributes): void
     {
-        $this->output[] = ['event' => 'onElementStart', 'tagName' => $name, 'attributes' => $attributes];
+        if ('item' === \strtolower($name)) {
+            $this->itemData = [];
+        }
     }
 
     /**
@@ -54,9 +56,14 @@ class SampleXmlHandler extends AbstractSaxHandler
      */
     protected function onElementData(\XMLParser $parser, string $data): void
     {
-        if (\trim($data)) {
-            $this->output[] = ['event' => 'onElementData', 'data' => trim($data)];
+        if (null === $this->itemData) {
+            return;
         }
+
+        match (\strtolower($this->getCurrentElement() ?? '')) {
+            'name', 'id' => $this->itemData[\strtolower($this->getCurrentElement())] = \trim($data),
+            default => null,
+        };
     }
 
     /**
@@ -64,7 +71,11 @@ class SampleXmlHandler extends AbstractSaxHandler
      */
     protected function onElementEnd(\XMLParser $parser, string $name): void
     {
-        $this->output[] = ['event' => 'onElementEnd', 'tagName' => $name];
+        if ('item' === \strtolower($name)) {
+            \assert(\is_callable($this->callback));
+            ($this->callback)($this->itemData);
+            $this->itemData = null;
+        }
     }
 
     /**
@@ -72,7 +83,7 @@ class SampleXmlHandler extends AbstractSaxHandler
      */
     protected function onDocumentEnd(\XMLParser $parser, StreamInterface $stream): void
     {
-        $this->output[] = ['event' => 'onDocumentStart'];
+        //NOOP
     }
 
     /**
@@ -88,6 +99,6 @@ class SampleXmlHandler extends AbstractSaxHandler
      */
     protected function getResult(): mixed
     {
-        return $this->output;
+        return null;
     }
 }

@@ -26,7 +26,7 @@ interface StreamAdapterInterface
      * @param mixed $xmlDocument XML document source.
      * @return bool TRUE if source is supported.
      */
-    public function supports($xmlDocument);
+    public function supports(mixed $xmlDocument): bool;
 
     /**
      * Convert XML document source to stream interface implementation.
@@ -36,5 +36,5 @@ interface StreamAdapterInterface
      *
      * @throws \Exception If conversion is impossible.
      */
-    public function convert($xmlDocument);
+    public function convert(mixed $xmlDocument): StreamInterface;
 }

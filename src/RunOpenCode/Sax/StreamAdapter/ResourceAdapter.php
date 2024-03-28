@@ -7,8 +7,11 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
+
 namespace RunOpenCode\Sax\StreamAdapter;
 
+use GuzzleHttp\Psr7\Stream;
+use Psr\Http\Message\StreamInterface;
 use RunOpenCode\Sax\Contract\StreamAdapterInterface;
 
 /**
@@ -20,17 +23,12 @@ use RunOpenCode\Sax\Contract\StreamAdapterInterface;
  */
 class ResourceAdapter implements StreamAdapterInterface
 {
-    /**
-     * @var string
-     */
-    private $streamClass;
+    private string $streamClass;
 
     /**
-     * ResourceAdapter constructor.
-     *
      * @param string $streamClass FQCN of StreamInterface implementation, GuzzleHttp\Psr7\Stream is used by default.
      */
-    public function __construct($streamClass = 'GuzzleHttp\\Psr7\\Stream')
+    public function __construct(string $streamClass = Stream::class)
     {
         $this->streamClass = $streamClass;
     }
@@ -38,16 +36,20 @@ class ResourceAdapter implements StreamAdapterInterface
     /**
      * {@inheritdoc}
      */
-    public function supports($xmlDocument)
+    public function supports(mixed $xmlDocument): bool
     {
-        return is_resource($xmlDocument) && get_resource_type($xmlDocument) === 'stream';
+        return \is_resource($xmlDocument) && \get_resource_type($xmlDocument) === 'stream';
     }
 
     /**
      * {@inheritdoc}
      */
-    public function convert($xmlDocument)
+    public function convert(mixed $xmlDocument): StreamInterface
     {
-        return new $this->streamClass($xmlDocument);
+        $object = new $this->streamClass($xmlDocument);
+
+        \assert($object instanceof StreamInterface);
+
+        return $object;
     }
 }

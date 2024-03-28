@@ -1,48 +1,58 @@
 {
-    "name": "runopencode/sax",
-    "description": "XML SAX (JAVA like) parser",
-    "keywords": [
-        "xml",
-        "sax",
-        "xml parser"
-    ],
-    "minimum-stability": "stable",
-    "license": "MIT",
-    "authors": [
-        {
-            "name": "Nikola Svitlica a.k.a TheCelavi",
-            "email": "thecelavi@gmail.com",
-            "homepage": "http://www.runopencode.com"
-        }
-    ],
-    "require": {
-        "psr/http-message": "~1.0",
-        "roave/security-advisories": "dev-master"
-    },
-    "autoload": {
-        "psr-4": {
-            "RunOpenCode\\Sax\\": "src/RunOpenCode/Sax"
-        }
-    },
-    "require-dev": {
-        "php": ">=7",
-        "guzzlehttp/psr7": "~1.0",
-        "phpunit/phpunit": "~6.0",
-        "mockery/mockery": "~0.9|~1.0",
-        "squizlabs/php_codesniffer": "~2.0",
-        "phploc/phploc": "dev-master",
-        "pdepend/pdepend": "~2.5",
-        "phpmd/phpmd": "@stable",
-        "sebastian/phpcpd": "dev-master",
-        "theseer/phpdox": "dev-master",
-        "escapestudios/symfony2-coding-standard": "~2.0"
-    },
-    "autoload-dev": {
-        "psr-4": {
-            "RunOpenCode\\Sax\\Test\\": "test/"
-        }
-    },
-    "suggest": {
-        "guzzlehttp/psr7": "Provides PSR-7 StreamInterface implementation."
+  "name": "runopencode/sax",
+  "description": "XML SAX (JAVA like) parser",
+  "keywords": [
+    "xml",
+    "sax",
+    "xml parser"
+  ],
+  "minimum-stability": "stable",
+  "license": "MIT",
+  "authors": [
+    {
+      "name": "Nikola Svitlica a.k.a TheCelavi",
+      "email": "thecelavi@gmail.com",
+      "homepage": "http://www.runopencode.com"
     }
+  ],
+  "require": {
+    "psr/http-message": "~1.0",
+    "roave/security-advisories": "dev-master",
+    "ext-xml": "*",
+    "ext-dom": "*",
+    "ext-simplexml": "*"
+  },
+  "autoload": {
+    "psr-4": {
+      "RunOpenCode\\Sax\\": "src/RunOpenCode/Sax"
+    }
+  },
+  "require-dev": {
+    "php": ">=8.2",
+    "guzzlehttp/psr7": "^2.6",
+    "phpunit/phpunit": "^9.5",
+    "mockery/mockery": "^1.6.11",
+    "squizlabs/php_codesniffer": "^3.9.0",
+    "phploc/phploc": "^2.0.5",
+    "pdepend/pdepend": "^2.16.2",
+    "phpmd/phpmd": "^2.15.0",
+    "sebastian/phpcpd": "^2.0.1",
+    "theseer/phpdox": "^0.7.0",
+    "escapestudios/symfony2-coding-standard": "^3.13.0",
+    "phpstan/phpstan": "^1.10.64",
+    "vimeo/psalm": "^5.6.0"
+  },
+  "autoload-dev": {
+    "psr-4": {
+      "RunOpenCode\\Sax\\Test\\": "test/"
+    }
+  },
+  "suggest": {
+    "guzzlehttp/psr7": "Provides PSR-7 StreamInterface implementation."
+  },
+  "scripts": {
+    "phpunit": "XDEBUG_MODE=coverage vendor/bin/phpunit --coverage-html ./build/phpunit",
+    "phpstan": "vendor/bin/phpstan analyse -l 9 src test",
+    "psalm": "XDEBUG_MODE=off vendor/bin/psalm --no-diff"
+  }
 }

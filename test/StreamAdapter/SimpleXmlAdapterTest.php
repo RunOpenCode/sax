@@ -7,9 +7,13 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
+
 namespace RunOpenCode\Sax\Test\StreamAdapter;
 
+use GuzzleHttp\Psr7\Stream;
 use PHPUnit\Framework\TestCase;
+use Psr\Http\Message\StreamInterface;
+use RunOpenCode\Sax\Exception\StreamAdapterException;
 use RunOpenCode\Sax\StreamAdapter\SimpleXmlAdapter;
 
 /**
@@ -19,43 +23,73 @@ use RunOpenCode\Sax\StreamAdapter\SimpleXmlAdapter;
  */
 class SimpleXmlAdapterTest extends TestCase
 {
-    /**
-     * @test
-     */
-    public function itReadsStream()
+    public function testItReadsStream(): void
     {
         $adapter = new SimpleXmlAdapter();
 
-        $simpleXmlElement = new \SimpleXMLElement(file_get_contents(__DIR__ . '/../Fixtures/sample.xml'));
+        /**
+         * @var string $content
+         */
+        $content = \file_get_contents(__DIR__ . '/../Fixtures/sample.xml');
+
+        $simpleXmlElement = new \SimpleXMLElement($content);
 
         $this->assertTrue($adapter->supports($simpleXmlElement), 'Should support \SimpleXMLElement');
-        $this->assertInstanceOf('Psr\\Http\\Message\\StreamInterface', $stream = $adapter->convert($simpleXmlElement), 'Should provide us with StreamInterface wrapper.');
+        $this->assertInstanceOf(StreamInterface::class, $stream = $adapter->convert($simpleXmlElement), 'Should provide us with StreamInterface wrapper.');
 
         $stream->close();
     }
 
-    /**
-     * @test
-     * @expectedException \RunOpenCode\Sax\Exception\StreamAdapterException
-     */
-    public function itThrowsExceptionWhenStreamHandlerCanNotBeAcquired()
+    public function testItThrowsExceptionWhenStreamIsNotProvided(): void
     {
-        $adapter = new SimpleXmlAdapter('GuzzleHttp\\Psr7\\Stream', ['stream' => null ]);
+        $this->expectException(StreamAdapterException::class);
+        $this->expectExceptionMessage('Stream is not provided.');
 
-        $simpleXmlElement = new \SimpleXMLElement(file_get_contents(__DIR__ . '/../Fixtures/sample.xml'));
+        $adapter = new SimpleXmlAdapter(Stream::class, ['stream' => null]);
+
+        /**
+         * @var string $content
+         */
+        $content = \file_get_contents(__DIR__ . '/../Fixtures/sample.xml');
+
+        $simpleXmlElement = new \SimpleXMLElement($content);
 
         $adapter->convert($simpleXmlElement);
     }
 
-    /**
-     * @test
-     * @expectedException \RunOpenCode\Sax\Exception\StreamAdapterException
-     */
-    public function itThrowsExceptionWhenStreamHandlerCanNotBeRewinded()
+    public function testItThrowsExceptionWhenStreamHandlerCanNotBeAcquired(): void
     {
-        $adapter = new SimpleXmlAdapter('GuzzleHttp\\Psr7\\Stream', ['stream' => 'php://stdin' ]);
+        $this->expectException(StreamAdapterException::class);
+        $this->expectExceptionMessage('Unable to acquire resource handler on "foo".');
 
-        $simpleXmlElement = new \SimpleXMLElement(file_get_contents(__DIR__ . '/../Fixtures/sample.xml'));
+        $adapter = new SimpleXmlAdapter(Stream::class, ['stream' => 'foo']);
+
+        /**
+         * @var string $content
+         */
+        $content = \file_get_contents(__DIR__ . '/../Fixtures/sample.xml');
+
+        $simpleXmlElement = new \SimpleXMLElement($content);
+
+        $adapter->convert($simpleXmlElement);
+    }
+
+    public function testItThrowsExceptionWhenStreamHandlerCanNotBeRewinded(): void
+    {
+        $this->markTestIncomplete('We cannot prevent output buffer not to flush into CLI.');
+
+        /** @phpstan-ignore-next-line */
+        $this->expectException(StreamAdapterException::class);
+        $this->expectExceptionMessage('Unable to to rewind stream.');
+
+        $adapter = new SimpleXmlAdapter(Stream::class, ['stream' => 'php://stdout']);
+
+        /**
+         * @var string $content
+         */
+        $content = \file_get_contents(__DIR__ . '/../Fixtures/sample.xml');
+
+        $simpleXmlElement = new \SimpleXMLElement($content);
 
         $adapter->convert($simpleXmlElement);
     }
