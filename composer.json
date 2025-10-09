@@ -17,7 +17,7 @@
   ],
   "require": {
     "psr/http-message": "~1.0",
-    "roave/security-advisories": "dev-master",
+    "roave/security-advisories": "dev-latest",
     "ext-xml": "*",
     "ext-dom": "*",
     "ext-simplexml": "*"
